@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button loginBtn;
     Button registerBtn;
+    ImageView landingImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,9 +32,11 @@ public class MainActivity extends AppCompatActivity {
 
         loginBtn = findViewById(R.id.loginBtn);
         registerBtn = findViewById(R.id.registerBtn);
+        landingImg = findViewById(R.id.landingImg);
 
         loginBtn.setOnClickListener(this::loginBtnOnClick);
         registerBtn.setOnClickListener(this::registerBtnOnClick);
+        landingImg.setImageResource(R.drawable.landing_bg);
 
     }
 
