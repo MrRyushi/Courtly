@@ -36,14 +36,14 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/landingDesc"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="30dp"
         android:fontFamily="@font/poppins_medium"
-        android:text="Book your game in seconds with our easy-to-use badminton court reservation app. Enjoy exclusive member discounts and seamless management for both players and court owners!"
+        android:text="@string/landing_description"
         android:textAlignment="center"
         android:textColor="#F0E6C4"
         android:textSize="15sp"
@@ -66,7 +66,7 @@
         app:cornerRadius="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/landingDesc" />
 
     <Button
         android:id="@+id/registerBtn"
