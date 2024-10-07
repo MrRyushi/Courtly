@@ -45,6 +45,6 @@ public class LoginBottomSheet extends BottomSheetDialogFragment {
 
     void signUpOnClick(View v) {
         dismiss();
-        // TODO: Redirect to Login Bottom Screen Overlay
+        new RegisterBottomSheet().show(getParentFragmentManager(), "RegisterBottomSheet");
     }
 }
