@@ -52,4 +52,9 @@ public class MainActivity extends AppCompatActivity {
         bottomSheet.show(getSupportFragmentManager(), bottomSheet.getTag());
     }
 
+    void handleLoginBtnClick(View v){
+        Intent i = new Intent(MainActivity.this, Home.class);
+        startActivity(i);
+    }
+
 }
