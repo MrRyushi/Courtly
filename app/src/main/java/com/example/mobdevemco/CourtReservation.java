@@ -17,9 +17,8 @@ import java.util.ArrayList;
 
 public class CourtReservation extends AppCompatActivity {
 
-    private CheckBox time6amTo7am, time7amTo8am, time8amTo9am, time9amTo10am, time10amTo11am, time11amTo12pm,
-            time12pmTo1pm, time1pmTo2pm, time2pmTo3pm, time3pmTo4pm, time4pmTo5pm, time5pmTo6pm, time6pmTo7pm;
-
+    private CheckBox time6amTo7am, time7amTo8am, time8amTo9am, time9amTo10am, time10amTo11am, time11amTo12pm, time12pmTo1pm,
+            time1pmTo2pm, time2pmTo3pm, time3pmTo4pm, time4pmTo5pm, time5pmTo6pm, time6pmTo7pm, time7pmTo8pm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +44,8 @@ public class CourtReservation extends AppCompatActivity {
         time3pmTo4pm = findViewById(R.id.time3pmTo4pm);
         time4pmTo5pm = findViewById(R.id.time4pmTo5pm);
         time5pmTo6pm = findViewById(R.id.time5pmTo6pm);
+        time6pmTo7pm = findViewById(R.id.time6pmTo7pm);
+        time7pmTo8pm = findViewById(R.id.time7pmTo8pm);
 
         // court name
         TextView courtName = findViewById(R.id.courtName);
@@ -104,6 +105,12 @@ public class CourtReservation extends AppCompatActivity {
         }
         if (time5pmTo6pm.isChecked()) {
             selectedTimeSlots.add("5:00 PM - 6:00 PM");
+        }
+        if (time6pmTo7pm.isChecked()) {
+            selectedTimeSlots.add("6:00 PM - 7:00 PM");
+        }
+        if (time7pmTo8pm.isChecked()) {
+            selectedTimeSlots.add("7:00 PM - 8:00 PM");
         }
 
         if (selectedTimeSlots.isEmpty()) {

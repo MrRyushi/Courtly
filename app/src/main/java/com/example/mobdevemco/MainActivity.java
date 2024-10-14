@@ -7,16 +7,23 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class MainActivity extends AppCompatActivity {
 
     Button loginBtn;
     Button registerBtn;
     ImageView landingImg;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

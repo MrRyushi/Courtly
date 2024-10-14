@@ -14,84 +14,54 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class Home extends AppCompatActivity {
 
     public String courtName;
+    private ActivityResultLauncher<Intent> myActivityResultLauncher;
+    private CourtData[] courtData;
+    private CourtAdapter courtAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_home);
+
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        myActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+                    public void onActivityResult(ActivityResult result) {
+
+                    }
+                });
+
+        courtData = new CourtData[]{
+                new CourtData("Court Alpha", "First Court to the left" ,R.drawable.court),
+                new CourtData("Court Bravo", "Second Court to the left", R.drawable.court),
+                new CourtData("Court Charlie", "Third Court to the left", R.drawable.court),
+                new CourtData("Court Delta", "Fourth Court to the left", R.drawable.court),
+                new CourtData("Court Echo", "First Court to the right", R.drawable.court),
+                new CourtData("Court Foxtrot", "Second Court to the right", R.drawable.court),
+                new CourtData("Court Golf", "Third Court to the right", R.drawable.court),
+                new CourtData("Court Hotel", "Fourth Court to the right", R.drawable.court),
+        };
+
+        courtAdapter = new CourtAdapter(courtData, Home.this, myActivityResultLauncher);
+        recyclerView.setAdapter(courtAdapter);
     }
 
-    private ActivityResultLauncher<Intent> myActivityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-                public void onActivityResult(ActivityResult result) {
 
-                }
-            });
-
-    public void handleAlphaCourtClick(View v){
-        courtName = "Court Alpha";
-        Intent i = new Intent(Home.this, CourtReservation.class);
-        i.putExtra("courtName", courtName);
-        myActivityResultLauncher.launch(i);
-    }
-
-    public void handleBravoCourtClick(View v){
-        courtName = "Court Bravo";
-        Intent i = new Intent(Home.this, CourtReservation.class);
-        i.putExtra("courtName", courtName);
-        myActivityResultLauncher.launch(i);
-    }
-
-    public void handleCharlieCourtClick(View v){
-        courtName = "Court Charlie";
-        Intent i = new Intent(Home.this, CourtReservation.class);
-        i.putExtra("courtName", courtName);
-        myActivityResultLauncher.launch(i);
-    }
-
-    public void handleDeltaCourtClick(View v){
-        courtName = "Court Delta";
-        Intent i = new Intent(Home.this, CourtReservation.class);
-        i.putExtra("courtName", courtName);
-        myActivityResultLauncher.launch(i);
-    }
-
-    public void handleEchoCourtClick(View v){
-        courtName = "Court Echo";
-        Intent i = new Intent(Home.this, CourtReservation.class);
-        i.putExtra("courtName", courtName);
-        myActivityResultLauncher.launch(i);
-    }
-
-    public void handleFoxtrotCourtClick(View v){
-        courtName = "Court Foxtrot";
-        Intent i = new Intent(Home.this, CourtReservation.class);
-        i.putExtra("courtName", courtName);
-        myActivityResultLauncher.launch(i);
-    }
-
-    public void handleGolfCourtClick(View v){
-        courtName = "Court Golf";
-        Intent i = new Intent(Home.this, CourtReservation.class);
-        i.putExtra("courtName", courtName);
-        myActivityResultLauncher.launch(i);
-    }
-
-    public void handleHotelCourtClick(View v){
-        courtName = "Court Hotel";
-        Intent i = new Intent(Home.this, CourtReservation.class);
-        i.putExtra("courtName", courtName);
-        myActivityResultLauncher.launch(i);
-    }
 
 }
