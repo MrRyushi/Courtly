@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ public class LoginBottomSheet extends BottomSheetDialogFragment {
 
     TextView signUpTxt;
     TextView forgotPasswordTxt;
+    Button loginBtn;
 
     @Nullable
     @Override
@@ -40,6 +42,15 @@ public class LoginBottomSheet extends BottomSheetDialogFragment {
             }
         });
 
+        loginBtn = view.findViewById(R.id.loginB);
+
+        loginBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleLoginBtnClick(v);  // Call the method to handle login
+            }
+        });
+
         return view; // Return the inflated view
     }
 
@@ -47,4 +58,12 @@ public class LoginBottomSheet extends BottomSheetDialogFragment {
         dismiss();
         new RegisterBottomSheet().show(getParentFragmentManager(), "RegisterBottomSheet");
     }
+
+    void handleLoginBtnClick(View v) {
+        // Start the Home activity when the login button is clicked
+        Intent i = new Intent(getActivity(), Home.class);
+        startActivity(i);
+        dismiss();  // Close the bottom sheet after login
+    }
+
 }
