@@ -31,7 +31,7 @@
             android:name=".MembershipPending"
             android:exported="false" />
         <activity
-            android:name=".ReserveACourt"
+            android:name=".CourtReservation"
             android:exported="false" />
         <activity
             android:name=".Home"
