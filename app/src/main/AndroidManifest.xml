@@ -13,10 +13,19 @@
         android:theme="@style/Theme.MOBDEVEMCO"
         tools:targetApi="31">
         <activity
+            android:name=".MembershipSuccess"
+            android:exported="false" />
+        <activity
+            android:name=".MembershipApplication"
+            android:exported="false" />
+        <activity
             android:name=".ReservationsHistory"
             android:exported="false" />
         <activity
             android:name=".MainActivity2"
+            android:exported="false" />
+        <activity
+            android:name=".MembershipPending"
             android:exported="false" />
         <activity
             android:name=".CourtReservation"
