@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,6 +31,14 @@ public class RegisterBottomSheet extends BottomSheetDialogFragment {
             }
         });
 
+        Button registerBtn = view.findViewById(R.id.registerBtn);
+        registerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleRegisterBtnClick(v);  // Call the method to handle login
+            }
+        });
+
         return view; // Return the inflated view
     }
 
@@ -37,4 +46,10 @@ public class RegisterBottomSheet extends BottomSheetDialogFragment {
         dismiss();
         new LoginBottomSheet().show(getParentFragmentManager(), "LoginBottomSheet");
     }
+
+    void handleRegisterBtnClick(View v) {
+        dismiss();
+        new LoginBottomSheet().show(getParentFragmentManager(), "LoginBottomSheet");
+    }
+
 }
