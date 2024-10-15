@@ -70,6 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:backgroundTint="#800000"
+                android:onClick="handleReservationsBtnClick"
                 android:text="Reservations"
                 android:textSize="18dp" />
         </LinearLayout>

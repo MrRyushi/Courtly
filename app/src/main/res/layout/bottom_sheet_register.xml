@@ -194,7 +194,7 @@
                 android:id="@+id/signUpTxt"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fontFamily="@font/poppings_regular"
+                android:fontFamily="@font/poppins_regular"
                 android:text="Sign in"
                 android:textColor="#480108"
                 android:textSize="15sp" />
