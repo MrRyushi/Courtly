@@ -91,7 +91,7 @@
                     android:textColor="@color/black"
                     android:layout_marginBottom="4dp"
                     android:textSize="12sp"
-                    android:fontFamily="@font/poppings_regular"
+                    android:fontFamily="@font/poppins_regular"
                     android:text="6:00 to 7:00" />
                 <CheckBox
                     android:id="@+id/time7amTo8am"
@@ -101,7 +101,7 @@
                     android:textSize="12sp"
                     android:background="@drawable/available_timeslot"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/poppings_regular"
+                    android:fontFamily="@font/poppins_regular"
                     android:text="7:00 to 8:00" />
                 <CheckBox
                     android:id="@+id/time8amTo9am"
@@ -111,7 +111,7 @@
                     android:textSize="12sp"
                     android:background="@drawable/available_timeslot"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/poppings_regular"
+                    android:fontFamily="@font/poppins_regular"
                     android:text="8:00 to 9:00" />
                 <CheckBox
                     android:id="@+id/time9amTo10am"
@@ -121,7 +121,7 @@
                     android:textSize="12sp"
                     android:background="@drawable/available_timeslot"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/poppings_regular"
+                    android:fontFamily="@font/poppins_regular"
                     android:text="9:00 to 10:00" />
                 <CheckBox
                     android:id="@+id/time10amTo11am"
@@ -131,7 +131,7 @@
                     android:textSize="12sp"
                     android:background="@drawable/not_available_timeslot"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/poppings_regular"
+                    android:fontFamily="@font/poppins_regular"
                     android:text="10:00 to 11:00" />
                 <CheckBox
                     android:id="@+id/time11amTo12pm"
@@ -141,7 +141,7 @@
                     android:textSize="12sp"
                     android:background="@drawable/available_timeslot"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/poppings_regular"
+                    android:fontFamily="@font/poppins_regular"
                     android:text="1100 to 12:00" />
                 <CheckBox
                     android:id="@+id/time12pmTo1pm"
@@ -151,7 +151,7 @@
                     android:textSize="12sp"
                     android:background="@drawable/available_timeslot"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/poppings_regular"
+                    android:fontFamily="@font/poppins_regular"
                     android:text="12:00 to 13:00" />
 
             </LinearLayout>
@@ -172,7 +172,7 @@
                     android:textSize="12sp"
                     android:background="@drawable/available_timeslot"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/poppings_regular"
+                    android:fontFamily="@font/poppins_regular"
                     android:text="13:00 to 14:00" />
                 <CheckBox
                     android:id="@+id/time2pmTo3pm"
@@ -182,7 +182,7 @@
                     android:textSize="12sp"
                     android:background="@drawable/available_timeslot"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/poppings_regular"
+                    android:fontFamily="@font/poppins_regular"
                     android:text="14:00 to 15:00" />
                 <CheckBox
                     android:id="@+id/time3pmTo4pm"
@@ -192,7 +192,7 @@
                     android:textSize="12sp"
                     android:background="@drawable/not_available_timeslot"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/poppings_regular"
+                    android:fontFamily="@font/poppins_regular"
                     android:text="15:00 to 16:00" />
                 <CheckBox
                     android:id="@+id/time4pmTo5pm"
@@ -202,7 +202,7 @@
                     android:textSize="12sp"
                     android:background="@drawable/available_timeslot"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/poppings_regular"
+                    android:fontFamily="@font/poppins_regular"
                     android:text="1600 to 17:00" />
                 <CheckBox
                     android:id="@+id/time5pmTo6pm"
@@ -212,7 +212,7 @@
                     android:textSize="12sp"
                     android:background="@drawable/available_timeslot"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/poppings_regular"
+                    android:fontFamily="@font/poppins_regular"
                     android:text="17:00 to 18:00" />
                 <CheckBox
                     android:id="@+id/time6pmTo7pm"
@@ -222,7 +222,7 @@
                     android:textSize="12sp"
                     android:background="@drawable/available_timeslot"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/poppings_regular"
+                    android:fontFamily="@font/poppins_regular"
                     android:text="18:00 to 19:00" />
                 <CheckBox
                     android:id="@+id/time7pmTo8pm"
@@ -232,7 +232,7 @@
                     android:textSize="12sp"
                     android:background="@drawable/available_timeslot"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/poppings_regular"
+                    android:fontFamily="@font/poppins_regular"
                     android:text="19:00 to 20:00" />
 
             </LinearLayout>

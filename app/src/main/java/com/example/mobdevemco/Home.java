@@ -62,6 +62,11 @@ public class Home extends AppCompatActivity {
         recyclerView.setAdapter(courtAdapter);
     }
 
+    public void handleReservationsBtnClick(View view) {
+        Intent intent = new Intent(Home.this, ReservationsHistory.class);
+        myActivityResultLauncher.launch(intent);
+    }
+
 
 
 }

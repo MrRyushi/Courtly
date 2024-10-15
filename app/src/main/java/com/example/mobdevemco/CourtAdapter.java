@@ -37,7 +37,7 @@ public class CourtAdapter extends RecyclerView.Adapter<CourtAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull CourtAdapter.ViewHolder holder, int position) {
         final CourtData courtDataList = courtData[position];
         holder.courtName.setText(courtDataList.getCourtName());
-        holder.courtLocation.setText(courtDataList.getCourtLocation());
+        holder.courtLocation.setText("Location: " + courtDataList.getCourtLocation());
         holder.courtImage.setImageResource(courtDataList.getCourtImage());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
