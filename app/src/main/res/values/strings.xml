@@ -44,4 +44,6 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
+    <string name="help_text">Contact us at: (123) 456-7890 or email: support@courtly.com</string>
+    <string name="applicationMsgTxt">In order to make sure our community holds up a standard, we take the time to look extra closely at each profile.</string>
 </resources>
