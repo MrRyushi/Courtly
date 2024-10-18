@@ -25,7 +25,7 @@
         android:id="@+id/clockImg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="180dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -78,67 +78,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppings_regular"
-            android:text="In order to make sure our community holds up a standard, we take the time to look extra closely at each profile."
+            android:text="@string/applicationMsgTxt"
             android:textAlignment="center"
             android:textColor="#333333"
             android:textSize="18sp" />
     </FrameLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="0dp"
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.521"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <FrameLayout
-            android:id="@+id/membershipFrame"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/rectangle_membership"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/reservationsFrame"
-            app:layout_constraintStart_toStartOf="parent">
-
-
-            <Button
-                android:id="@+id/membershipBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:backgroundTint="#800000"
-                android:fontFamily="@font/poppins_medium"
-                android:text="Membership"
-                android:textAlignment="center"
-                android:textColor="#F2E8C6"
-                android:textSize="18sp" />
-
-        </FrameLayout>
-
-        <FrameLayout
-            android:id="@+id/reservationsFrame"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/rectangle_reservations"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/membershipFrame">
-
-            <Button
-                android:id="@+id/reservationBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:backgroundTint="#982B1C"
-                android:fontFamily="@font/poppins_medium"
-                android:text="Reservations"
-                android:textAlignment="center"
-                android:textColor="#F2E8C6"
-                android:textSize="18sp" />
-        </FrameLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/arrow_back_black" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
