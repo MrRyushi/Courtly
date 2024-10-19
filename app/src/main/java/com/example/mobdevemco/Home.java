@@ -67,6 +67,10 @@ public class Home extends AppCompatActivity {
         myActivityResultLauncher.launch(intent);
     }
 
+    public void handleMembershipButtonClick(View v){
+        Intent intent = new Intent(Home.this, MembershipApplication.class);
+        myActivityResultLauncher.launch(intent);
+    }
 
 
 }

@@ -79,6 +79,7 @@
                 android:backgroundTint="#800000"
                 android:fontFamily="@font/poppins_medium"
                 android:text="Membership"
+                android:onClick="handleMembershipButtonClick"
                 android:textAlignment="center"
                 android:textColor="#F2E8C6"
                 android:textSize="18sp" />
