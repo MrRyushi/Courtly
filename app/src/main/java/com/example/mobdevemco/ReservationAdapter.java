@@ -34,8 +34,8 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
     @Override
     public void onBindViewHolder(@NonNull ReservationAdapter.ViewHolder holder, int position) {
         final ReservationData reservationDataList = reservationData[position];
-        holder.courtName.setText(reservationDataList.getCourtNname());
-        holder.reservationDate.setText("Date: " + reservationDataList.getReservationDdate());
+        holder.courtName.setText(reservationDataList.getCourtName());
+        holder.reservationDate.setText("Date: " + reservationDataList.getReservationDate());
         holder.reservationTime.setText("Time: " + reservationDataList.getReservationTime());
     }
 

@@ -44,7 +44,7 @@ public class CourtAdapter extends RecyclerView.Adapter<CourtAdapter.ViewHolder> 
             @Override
             public void onClick(View v) {
                 /* Remove this and replace it with an intent call*/
-                Intent i = new Intent(context, CourtReservation.class);
+                Intent i = new Intent(context, ReserveACourt.class);
                 i.putExtra("courtName", courtDataList.getCourtName());
                 i.putExtra("courtLocation", courtDataList.getCourtLocation());
                 i.putExtra("courtImage", courtDataList.getCourtImage());

@@ -1,6 +1,5 @@
 package com.example.mobdevemco;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -17,18 +16,21 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class Home extends AppCompatActivity {
-
-    public String courtName;
+public class CurrentReservations extends AppCompatActivity {
+    private ReservationData[] currentReservationData;
+    private CurrentReservationsAdapter reservationAdapter;
     private ActivityResultLauncher<Intent> myActivityResultLauncher;
-    private CourtData[] courtData;
-    private CourtAdapter courtAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_current_reservations);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
@@ -47,24 +49,21 @@ public class Home extends AppCompatActivity {
                     }
                 });
 
-        courtData = new CourtData[]{
-                new CourtData("Court Alpha", "First Court to the left" ,R.drawable.court),
-                new CourtData("Court Bravo", "Second Court to the left", R.drawable.court),
-                new CourtData("Court Charlie", "Third Court to the left", R.drawable.court),
-                new CourtData("Court Delta", "Fourth Court to the left", R.drawable.court),
-                new CourtData("Court Echo", "First Court to the right", R.drawable.court),
-                new CourtData("Court Foxtrot", "Second Court to the right", R.drawable.court),
-                new CourtData("Court Golf", "Third Court to the right", R.drawable.court),
-                new CourtData("Court Hotel", "Fourth Court to the right", R.drawable.court),
+        currentReservationData = new ReservationData[]{
+                new ReservationData(1,"Court Alpha", "2021-10-01", "10:00 AM to 11:00 AM"),
+                new ReservationData(2,"Court Bravo", "2021-10-02", "11:00 AM to 12:00 PM"),
         };
 
-        courtAdapter = new CourtAdapter(courtData, Home.this, myActivityResultLauncher);
-        recyclerView.setAdapter(courtAdapter);
+        reservationAdapter = new CurrentReservationsAdapter(currentReservationData, CurrentReservations.this);
+        recyclerView.setAdapter(reservationAdapter);
     }
 
-    public void handleReservationsBtnClick(View view) {
-        Intent intent = new Intent(Home.this, CurrentReservations.class);
+    public void handleBackButtonClick(View view) {
+        finish();
+    }
+
+    public void handleHistoryButtonClick(View view) {
+        Intent intent = new Intent(CurrentReservations.this, ReservationsHistory.class);
         myActivityResultLauncher.launch(intent);
     }
-
 }

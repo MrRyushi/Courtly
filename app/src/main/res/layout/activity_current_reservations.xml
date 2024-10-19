@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ReservationsHistory">
+    tools:context=".CurrentReservations">
 
     <LinearLayout
         android:layout_width="409dp"
@@ -41,7 +41,7 @@
 
             <TextView
                 android:id="@+id/memberSince"
-                android:layout_width="276dp"
+                android:layout_width="272dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_border"
                 android:fontFamily="@font/poppins_light"
@@ -61,13 +61,35 @@
             android:paddingBottom="5dp"
             android:paddingTop="18dp">
 
-            <TextView
-                android:id="@+id/textView5"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins_regular"
-                android:text="History"
-                android:textSize="24dp" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="Current"
+                    android:textSize="24dp" />
+
+                <Button
+                    android:id="@+id/historyBtn"
+                    android:layout_width="120dp"
+                    android:layout_height="50dp"
+                    android:backgroundTint="#982B1C"
+                    android:fontFamily="@font/poppins_regular"
+                    android:onClick="handleHistoryButtonClick"
+                    android:text="History"
+                    android:textSize="20dp"
+                    app:cornerRadius="7dp"
+                    app:strokeColor="#D9454242"
+                    app:strokeWidth="1dp" />
+            </LinearLayout>
+
 
             <!-- Horizontal line (divider) -->
             <View
@@ -79,7 +101,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="480dp"
+                android:layout_height="460dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:background="#F2E8C6"
