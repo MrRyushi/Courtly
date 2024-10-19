@@ -29,7 +29,22 @@ public class MembershipApplication extends AppCompatActivity {
     }
 
     public void handleApplyButton(View view) {
-        Intent i = new Intent(this, MembershipPending.class);
-        startActivity(i);
+        //Intent i = new Intent(this, MembershipPending.class);
+        //startActivity(i);
+        
+        // Create an AlertDialog builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Application Sent");
+        builder.setMessage("Your membership application has been sent successfully.");
+
+        // Add a button to dismiss the dialog
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            dialog.dismiss();  // Close the dialog
+        });
+
+        // Show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        
     }
 }
