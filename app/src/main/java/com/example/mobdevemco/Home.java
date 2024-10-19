@@ -63,8 +63,14 @@ public class Home extends AppCompatActivity {
     }
 
     public void handleReservationsBtnClick(View view) {
-        Intent intent = new Intent(Home.this, CurrentReservations.class);
+        Intent intent = new Intent(Home.this, ReservationsHistory.class);
         myActivityResultLauncher.launch(intent);
     }
+
+    public void handleMembershipButtonClick(View v){
+        Intent intent = new Intent(Home.this, MembershipApplication.class);
+        myActivityResultLauncher.launch(intent);
+    }
+
 
 }

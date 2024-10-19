@@ -13,16 +13,22 @@
         android:theme="@style/Theme.MOBDEVEMCO"
         tools:targetApi="31">
         <activity
+            android:name=".MembershipSuccess"
+            android:exported="false" />
+        <activity
+            android:name=".ReserveACourt"
+            android:exported="false" />
+        <activity
+            android:name=".MembershipApplication"
+            android:exported="false" />
+        <activity
             android:name=".CurrentReservations"
             android:exported="false" />
         <activity
             android:name=".ReservationsHistory"
             android:exported="false" />
         <activity
-            android:name=".MainActivity2"
-            android:exported="false" />
-        <activity
-            android:name=".ReserveACourt"
+            android:name=".MembershipPending"
             android:exported="false" />
         <activity
             android:name=".Home"
@@ -31,12 +37,6 @@
             android:name=".RegisterBottomSheet"
             android:exported="false"
             android:theme="@style/Theme.MOBDEVEMCO" />
-        <activity
-            android:name=".RegisterActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LoginActivity"
-            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
