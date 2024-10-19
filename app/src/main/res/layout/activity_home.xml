@@ -102,6 +102,7 @@
                 android:backgroundTint="#982B1C"
                 android:fontFamily="@font/poppins_medium"
                 android:text="Reservations"
+                android:onClick="handleReservationsBtnClick"
                 android:textAlignment="center"
                 android:textColor="#F2E8C6"
                 android:textSize="18sp" />
