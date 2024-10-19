@@ -5,22 +5,25 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#800000"
+    android:backgroundTint="#800000"
     tools:context=".MembershipApplication">
 
     <ImageView
         android:id="@+id/applicationImg"
-        android:layout_width="439dp"
-        android:layout_height="907dp"
-        android:scaleType="center"
+        android:layout_width="968dp"
+        android:layout_height="857dp"
+        android:alpha="0.7"
+        android:scaleType="fitXY"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/application_bg" />
+        app:srcCompat="@drawable/membership_bg" />
 
     <TextView
         android:id="@+id/subTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:fontFamily="@font/poppins_light"
         android:gravity="center_horizontal"
         android:text="No Commitment. Cancel any time."
@@ -33,32 +36,37 @@
 
     <TextView
         android:id="@+id/applicationTxt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="180dp"
+        android:layout_width="257dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="140dp"
         android:fontFamily="@font/poppins_bold"
         android:text="Become a Member"
         android:textColor="#DAD4B5"
         android:textSize="26sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/applyBtn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="264dp"
+        android:layout_height="65dp"
         android:layout_marginStart="90dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="44dp"
         android:layout_marginEnd="90dp"
-        android:backgroundTint="#800000"
+        android:backgroundTint="#228C4F"
         android:fontFamily="@font/poppins_bold"
         android:text="Apply Now"
         android:textColor="#D8D2B4"
         android:textSize="24sp"
+        app:cornerRadius="15dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.515"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/frameLayout2" />
+        app:layout_constraintTop_toBottomOf="@id/frameLayout2"
+        app:strokeColor="#62FFFFFF"
+        app:strokeWidth="1sp" />
 
     <FrameLayout
         android:id="@+id/frameLayout2"
@@ -84,26 +92,27 @@
                 android:id="@+id/headingTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins_bold"
+                android:fontFamily="@font/poppins_medium"
                 android:gravity="center"
                 android:text="Unlock All Features"
                 android:textAlignment="center"
-                android:textColor="#333333"
+                android:textColor="#DAD4B5"
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.488"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/feature1Img"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="28dp"
+                android:layout_height="25dp"
                 android:layout_marginStart="28dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/headingTxt"
-                app:srcCompat="@drawable/ic_android_black_24dp" />
+                app:srcCompat="@drawable/check_icon" />
 
             <TextView
                 android:id="@+id/feature1Txt"
@@ -111,27 +120,29 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:text="Priority Court Reservations"
+                android:textColor="#DAD4B5"
                 app:layout_constraintBottom_toBottomOf="@+id/feature1Img"
                 app:layout_constraintStart_toEndOf="@+id/feature1Img"
                 app:layout_constraintTop_toTopOf="@+id/feature1Img" />
 
             <ImageView
                 android:id="@+id/feature2Img"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="28dp"
+                android:layout_height="25dp"
                 android:layout_marginStart="28dp"
                 android:layout_marginTop="10dp"
                 android:layout_weight="1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/feature1Img"
-                app:srcCompat="@drawable/ic_android_black_24dp" />
+                app:srcCompat="@drawable/check_icon" />
 
             <TextView
                 android:id="@+id/feature2Txt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="8dp"
                 android:text="Exclusive Member Discounts"
+                android:textColor="#DAD4B5"
                 app:layout_constraintBottom_toBottomOf="@+id/feature2Img"
                 app:layout_constraintStart_toEndOf="@+id/feature2Img"
                 app:layout_constraintTop_toTopOf="@+id/feature2Img"
@@ -139,14 +150,14 @@
 
             <ImageView
                 android:id="@+id/feature3Img"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="28dp"
+                android:layout_height="25dp"
                 android:layout_marginStart="28dp"
                 android:layout_marginTop="10dp"
                 android:layout_weight="1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/feature2Img"
-                app:srcCompat="@drawable/ic_android_black_24dp" />
+                app:srcCompat="@drawable/check_icon" />
 
             <TextView
                 android:id="@+id/feature3Txt"
@@ -154,6 +165,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:text="Locker Room &amp; Lounge Access"
+                android:textColor="#DAD4B5"
                 app:layout_constraintBottom_toBottomOf="@id/feature3Img"
                 app:layout_constraintStart_toEndOf="@id/feature3Img"
                 app:layout_constraintTop_toTopOf="@id/feature3Img"
@@ -161,14 +173,14 @@
 
             <ImageView
                 android:id="@+id/feature4Img"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="28dp"
+                android:layout_height="25dp"
                 android:layout_marginStart="28dp"
                 android:layout_marginTop="10dp"
                 android:layout_weight="1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/feature3Img"
-                app:srcCompat="@drawable/ic_android_black_24dp" />
+                app:srcCompat="@drawable/check_icon" />
 
             <TextView
                 android:id="@+id/feature4Txt"
@@ -176,6 +188,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:text="Free Event Entries"
+                android:textColor="#DAD4B5"
                 app:layout_constraintBottom_toBottomOf="@id/feature4Img"
                 app:layout_constraintStart_toEndOf="@id/feature4Img"
                 app:layout_constraintTop_toTopOf="@id/feature4Img"
@@ -184,11 +197,11 @@
             <View
                 android:id="@+id/divider"
                 android:layout_width="0dp"
-                android:layout_height="2sp"
+                android:layout_height="1sp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
-                android:background="#333333"
+                android:background="#DAD4B5"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/feature4Txt" />
@@ -200,7 +213,9 @@
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/poppins_light"
                 android:text="Need help?"
+                android:textColor="#DAD4B5"
                 android:textSize="12sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider" />
@@ -214,6 +229,7 @@
                 android:fontFamily="@font/poppins_light"
                 android:text="@string/help_text"
                 android:textAlignment="center"
+                android:textColor="#DAD4B5"
                 android:textSize="10sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
