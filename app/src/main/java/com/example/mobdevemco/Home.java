@@ -23,6 +23,7 @@ public class Home extends AppCompatActivity {
     private ActivityResultLauncher<Intent> myActivityResultLauncher;
     private CourtData[] courtData;
     private CourtAdapter courtAdapter;
+    public boolean isUserAMember = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +44,15 @@ public class Home extends AppCompatActivity {
         myActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
                     public void onActivityResult(ActivityResult result) {
-
+                        if(result.getResultCode() == Activity.RESULT_OK){
+                            Intent data = result.getData();
+                            if(data != null){
+                                String membershipApplication = data.getStringExtra("membershipApplication");
+                               if(membershipApplication != null && membershipApplication.equals("success")){
+                                   isUserAMember = true;
+                               }
+                            }
+                        }
                     }
                 });
 
@@ -68,7 +77,7 @@ public class Home extends AppCompatActivity {
     }
 
     public void handleMembershipButtonClick(View v){
-        Intent intent = new Intent(Home.this, MembershipApplication.class);
+        Intent intent = isUserAMember ? new Intent(Home.this, MembershipPending.class) : new Intent(Home.this, MembershipApplication.class);
         myActivityResultLauncher.launch(intent);
     }
 

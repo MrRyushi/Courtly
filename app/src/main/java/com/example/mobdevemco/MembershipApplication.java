@@ -30,8 +30,6 @@ public class MembershipApplication extends AppCompatActivity {
     }
 
     public void handleApplyButton(View view) {
-        //Intent i = new Intent(this, MembershipPending.class);
-        //startActivity(i);
         
         // Create an AlertDialog builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -41,6 +39,9 @@ public class MembershipApplication extends AppCompatActivity {
         // Add a button to dismiss the dialog
         builder.setPositiveButton("OK", (dialog, which) -> {
             dialog.dismiss();  // Close the dialog
+            Intent i = new Intent();
+            i.putExtra("membershipApplication", "success");
+            setResult(RESULT_OK, i);
             finish();
         });
 

@@ -21,17 +21,6 @@ public class ReservationsHistory extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_reservations_history);
-
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
 
         reservationData = new ReservationData[]{
                 new ReservationData(1,"Court Alpha", "2021-10-01", "10:00 AM to 11:00 AM"),
@@ -43,6 +32,21 @@ public class ReservationsHistory extends AppCompatActivity {
                 new ReservationData(7,"Court Golf", "2021-10-07", "04:00 PM to 05:00 PM"),
                 new ReservationData(8,"Court Hotel", "2021-10-08", "05:00 PM to 06:00 PM"),
         };
+
+        if(reservationData == null) {
+            setContentView(R.layout.activity_empty_reservations_history);
+            return;
+        }
+        setContentView(R.layout.activity_reservations_history);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         reservationAdapter = new ReservationAdapter(reservationData, ReservationsHistory.this);
         recyclerView.setAdapter(reservationAdapter);
