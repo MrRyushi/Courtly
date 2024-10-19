@@ -43,9 +43,9 @@ Before running the mobile app, ensure you have the following installed:
    git clone https://github.com/MrRyushi/MOBDEVE-MCO.git
    ```
 2. **Run the app**
-  ```bash
-  run in android studio
-  ```
+   ```bash
+   run in android studio
+   ```
 
 ## Usage
 - Register/Login: First-time users should register, while returning users can log in with their credentials.
