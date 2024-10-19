@@ -14,7 +14,7 @@
         android:background="#F2E8C6">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="420dp"
             android:layout_height="wrap_content"
             android:background="#800000"
             android:orientation="vertical"
@@ -41,12 +41,12 @@
 
             <TextView
                 android:id="@+id/memberSince"
-                android:layout_width="match_parent"
+                android:layout_width="275dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_border"
                 android:fontFamily="@font/poppins_light"
-                android:paddingStart="12dp"
                 android:paddingVertical="4dp"
+                android:paddingStart="12dp"
                 android:text="Member Since: January 14, 2024"
                 android:textColor="#F2E8C6"
                 android:textSize="16dp" />
@@ -55,11 +55,49 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="262dp"
             android:orientation="vertical"
             android:paddingHorizontal="16dp"
-            android:paddingBottom="5dp"
-            android:paddingTop="18dp">
+            android:paddingTop="18dp"
+            android:paddingBottom="5dp">
+
+            <TextView
+                android:id="@+id/currentHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_regular"
+                android:text="Current"
+                android:textSize="24dp" />
+
+            <!-- Horizontal line (divider) -->
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="8dp"
+                android:background="#B0B0B0" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView2"
+                android:layout_width="match_parent"
+                android:layout_height="315dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="#F2E8C6"
+                android:padding="10dp"
+                android:scrollbars="vertical" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="18dp"
+            android:paddingBottom="5dp">
+
+            <!-- Horizontal line (divider) -->
 
             <TextView
                 android:id="@+id/textView5"
@@ -69,8 +107,8 @@
                 android:text="History"
                 android:textSize="24dp" />
 
-            <!-- Horizontal line (divider) -->
             <View
+                android:id="@+id/view2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginVertical="8dp"

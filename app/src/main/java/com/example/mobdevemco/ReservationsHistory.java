@@ -13,8 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class ReservationsHistory extends AppCompatActivity {
 
-    private ReservationData[] reservationData;
+    private ReservationData[] reservationData, reservationData2;
     private ReservationAdapter reservationAdapter;
+    private CurrentResAdapter reservationAdapter2;
 
 
     @Override
@@ -24,6 +25,11 @@ public class ReservationsHistory extends AppCompatActivity {
         setContentView(R.layout.activity_reservations_history);
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        RecyclerView recyclerView2 = findViewById(R.id.recyclerView2);
+
+        recyclerView2.setHasFixedSize(true);
+        recyclerView2.setLayoutManager(new LinearLayoutManager(this));
+
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -44,8 +50,16 @@ public class ReservationsHistory extends AppCompatActivity {
                 new ReservationData("Court Hotel", "2021-10-08", "05:00 PM to 06:00 PM"),
         };
 
+        reservationData2 = new ReservationData[]{
+                new ReservationData("Court Alpha", "2021-10-15", "10:00 AM to 11:00 AM"),
+                new ReservationData("Court Bravo", "2021-10-16", "11:00 AM to 12:00 PM"),
+        };
+
+        reservationAdapter2 = new CurrentResAdapter(reservationData2, ReservationsHistory.this);
+        recyclerView2.setAdapter(reservationAdapter2);
         reservationAdapter = new ReservationAdapter(reservationData, ReservationsHistory.this);
         recyclerView.setAdapter(reservationAdapter);
+
     }
 
     public void handleBackButtonClick(View view) {
