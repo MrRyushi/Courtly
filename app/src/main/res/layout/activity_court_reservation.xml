@@ -57,7 +57,8 @@
             android:id="@+id/calendarView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#FBFBFB" />
+            android:background="#FBFBFB"
+            android:elevation="5dp" />
 
         <TextView
             android:id="@+id/timeText"

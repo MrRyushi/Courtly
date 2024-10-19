@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ReservationsHistory">
+    tools:context=".CurrentReservations">
 
     <LinearLayout
         android:layout_width="409dp"
@@ -41,12 +41,12 @@
 
             <TextView
                 android:id="@+id/memberSince"
-                android:layout_width="match_parent"
+                android:layout_width="272dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_border"
                 android:fontFamily="@font/poppins_light"
-                android:paddingStart="12dp"
                 android:paddingVertical="4dp"
+                android:paddingStart="12dp"
                 android:text="Member Since: January 14, 2024"
                 android:textColor="#F2E8C6"
                 android:textSize="16dp" />
@@ -78,13 +78,16 @@
 
                 <Button
                     android:id="@+id/historyBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_regular"
+                    android:layout_width="120dp"
+                    android:layout_height="50dp"
                     android:backgroundTint="#982B1C"
+                    android:fontFamily="@font/poppins_regular"
                     android:onClick="handleHistoryButtonClick"
-                    android:textSize="24dp"
-                    android:text="History" />
+                    android:text="History"
+                    android:textSize="20dp"
+                    app:cornerRadius="7dp"
+                    app:strokeColor="#D9454242"
+                    app:strokeWidth="1dp" />
             </LinearLayout>
 
 

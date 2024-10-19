@@ -50,8 +50,8 @@ public class CurrentReservations extends AppCompatActivity {
                 });
 
         currentReservationData = new ReservationData[]{
-                new ReservationData("Court Alpha", "2021-10-01", "10:00 AM to 11:00 AM"),
-                new ReservationData("Court Bravo", "2021-10-02", "11:00 AM to 12:00 PM"),
+                new ReservationData(1,"Court Alpha", "2021-10-01", "10:00 AM to 11:00 AM"),
+                new ReservationData(2,"Court Bravo", "2021-10-02", "11:00 AM to 12:00 PM"),
         };
 
         reservationAdapter = new CurrentReservationsAdapter(currentReservationData, CurrentReservations.this);

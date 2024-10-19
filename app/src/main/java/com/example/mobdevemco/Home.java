@@ -67,6 +67,4 @@ public class Home extends AppCompatActivity {
         myActivityResultLauncher.launch(intent);
     }
 
-
-
 }

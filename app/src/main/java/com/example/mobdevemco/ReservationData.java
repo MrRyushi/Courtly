@@ -1,37 +1,45 @@
 package com.example.mobdevemco;
 
 public class ReservationData {
-    private String courtNname;
-    private String reservationDdate;
+    private int id;
+    private String courtName;
+    private String reservationDate;
     private String reservationTime;
 
-    public ReservationData(String courtNname, String reservationDdate, String reservationTime) {
-        this.courtNname = courtNname;
-        this.reservationDdate = reservationDdate;
+    public ReservationData(int id, String courtNname, String reservationDdate, String reservationTime) {
+        this.id = id;
+        this.courtName = courtNname;
+        this.reservationDate = reservationDdate;
         this.reservationTime = reservationTime;
     }
 
-    public String getCourtNname() {
-        return courtNname;
+    public String getCourtName() {
+        return courtName;
     }
 
-    public String getReservationDdate() {
-        return reservationDdate;
+    public String getReservationDate() {
+        return reservationDate;
     }
 
     public String getReservationTime() {
         return reservationTime;
     }
 
-    public void setCourtNname(String courtNname) {
-        this.courtNname = courtNname;
+    public int getId() { return id; }
+
+    public void setCourtName(String courtNname) {
+        this.courtName = courtNname;
     }
 
-    public void setReservationDdate(String reservationDdate) {
-        this.reservationDdate = reservationDdate;
+    public void setReservationDate(String reservationDdate) {
+        this.reservationDate = reservationDdate;
     }
 
     public void setReservationTime(String reservationTime) {
         this.reservationTime = reservationTime;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

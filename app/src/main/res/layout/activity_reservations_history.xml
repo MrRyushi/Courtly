@@ -41,12 +41,12 @@
 
             <TextView
                 android:id="@+id/memberSince"
-                android:layout_width="match_parent"
+                android:layout_width="276dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_border"
                 android:fontFamily="@font/poppins_light"
-                android:paddingStart="12dp"
                 android:paddingVertical="4dp"
+                android:paddingStart="12dp"
                 android:text="Member Since: January 14, 2024"
                 android:textColor="#F2E8C6"
                 android:textSize="16dp" />

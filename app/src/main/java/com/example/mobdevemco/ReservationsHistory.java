@@ -34,14 +34,14 @@ public class ReservationsHistory extends AppCompatActivity {
         });
 
         reservationData = new ReservationData[]{
-                new ReservationData("Court Alpha", "2021-10-01", "10:00 AM to 11:00 AM"),
-                new ReservationData("Court Bravo", "2021-10-02", "11:00 AM to 12:00 PM"),
-                new ReservationData("Court Charlie", "2021-10-03", "12:00 PM to 01:00 PM"),
-                new ReservationData("Court Delta", "2021-10-04", "01:00 PM to 02:00 PM"),
-                new ReservationData("Court Echo", "2021-10-05", "02:00 PM to 03:00 PM"),
-                new ReservationData("Court Foxtrot", "2021-10-06", "03:00 PM to 04:00 PM"),
-                new ReservationData("Court Golf", "2021-10-07", "04:00 PM to 05:00 PM"),
-                new ReservationData("Court Hotel", "2021-10-08", "05:00 PM to 06:00 PM"),
+                new ReservationData(1,"Court Alpha", "2021-10-01", "10:00 AM to 11:00 AM"),
+                new ReservationData(2,"Court Bravo", "2021-10-02", "11:00 AM to 12:00 PM"),
+                new ReservationData(3,"Court Charlie", "2021-10-03", "12:00 PM to 01:00 PM"),
+                new ReservationData(4,"Court Delta", "2021-10-04", "01:00 PM to 02:00 PM"),
+                new ReservationData(5,"Court Echo", "2021-10-05", "02:00 PM to 03:00 PM"),
+                new ReservationData(6,"Court Foxtrot", "2021-10-06", "03:00 PM to 04:00 PM"),
+                new ReservationData(7,"Court Golf", "2021-10-07", "04:00 PM to 05:00 PM"),
+                new ReservationData(8,"Court Hotel", "2021-10-08", "05:00 PM to 06:00 PM"),
         };
 
         reservationAdapter = new ReservationAdapter(reservationData, ReservationsHistory.this);
