@@ -1,5 +1,6 @@
 package com.example.mobdevemco;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -40,11 +41,13 @@ public class MembershipApplication extends AppCompatActivity {
         // Add a button to dismiss the dialog
         builder.setPositiveButton("OK", (dialog, which) -> {
             dialog.dismiss();  // Close the dialog
+            finish();
         });
 
         // Show the AlertDialog
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+
         
     }
 }
