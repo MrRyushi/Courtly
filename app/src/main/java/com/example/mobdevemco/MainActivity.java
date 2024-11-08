@@ -1,16 +1,21 @@
 package com.example.mobdevemco;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -18,12 +23,33 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class MainActivity extends AppCompatActivity {
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+public class MainActivity extends AppCompatActivity implements RegisterBottomSheet.OnRegisterListener, LoginBottomSheet.OnLoginListener, LoginBottomSheet.OnResetPasswordListener {
 
     Button loginBtn;
     Button registerBtn;
     ImageView landingImg;
+    FirebaseAuth mAuth;
 
+    @Override
+    public void onRegister(String fullName, String email, String password) {
+        handleRegister(email, password, fullName);
+    }
+
+    @Override
+    public void onLogin(String email, String password) {
+        handleLogin(email, password);
+    }
+
+    @Override
+    public void onResetPassword(String email) {
+        handleResetPassword(email);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        mAuth = FirebaseAuth.getInstance();
+
         loginBtn = findViewById(R.id.loginBtn);
         registerBtn = findViewById(R.id.registerBtn);
         landingImg = findViewById(R.id.landingImg);
@@ -45,6 +73,16 @@ public class MainActivity extends AppCompatActivity {
         registerBtn.setOnClickListener(this::registerBtnOnClick);
         landingImg.setImageResource(R.drawable.landing_bg);
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(currentUser != null){
+            currentUser.reload();
+        }
     }
 
     void loginBtnOnClick(View v) {
@@ -59,9 +97,89 @@ public class MainActivity extends AppCompatActivity {
         bottomSheet.show(getSupportFragmentManager(), bottomSheet.getTag());
     }
 
-    void handleLoginBtnClick(View v){
-        Intent i = new Intent(MainActivity.this, Home.class);
-        startActivity(i);
+    void handleRegister(String email, String password, String fullName) {
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // User registered successfully
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            Toast.makeText(MainActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
+
+                            // Dismiss RegisterBottomSheet and show LoginBottomSheet
+                            dismissRegisterBottomSheet();
+                            showLoginBottomSheet();
+                        } else {
+                            // Registration failed, display a message
+                            Toast.makeText(MainActivity.this, "Registration failed: " + task.getException().getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
+    // Method to dismiss RegisterBottomSheet
+    private void dismissRegisterBottomSheet() {
+        RegisterBottomSheet registerBottomSheet = (RegisterBottomSheet) getSupportFragmentManager().findFragmentByTag("RegisterBottomSheet");
+        if (registerBottomSheet != null) {
+            registerBottomSheet.dismiss();
+        }
+    }
+
+    void handleLogin(String email, String password) {
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, display a success message
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            Toast.makeText(MainActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+
+                            // Dismiss LoginBottomSheet
+                            dismissLoginBottomSheet();
+
+                            // Navigate to the main screen or update UI
+                            Intent i = new Intent(MainActivity.this, Home.class);
+                            startActivity(i);
+                        } else {
+                            // If sign in fails, display an error message
+                            Toast.makeText(MainActivity.this, "Login failed: Email or password is incorrect",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    // Method to dismiss LoginBottomSheet
+    private void dismissLoginBottomSheet() {
+        LoginBottomSheet loginBottomSheet = (LoginBottomSheet) getSupportFragmentManager().findFragmentByTag("LoginBottomSheet");
+        if (loginBottomSheet != null) {
+            loginBottomSheet.dismiss();
+        }
+    }
+
+    void handleResetPassword(String email) {
+        mAuth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Email sent.");
+                            Toast.makeText(MainActivity.this, "Reset password email sent successfully!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "Failed to send reset email: " + task.getException().getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+
+
+    // Method to show LoginBottomSheet
+    private void showLoginBottomSheet() {
+        new LoginBottomSheet().show(getSupportFragmentManager(), "LoginBottomSheet");
+    }
 }
