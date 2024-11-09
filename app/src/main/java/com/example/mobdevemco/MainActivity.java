@@ -28,6 +28,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity implements RegisterBottomSheet.OnRegisterListener, LoginBottomSheet.OnLoginListener, LoginBottomSheet.OnResetPasswordListener {
 
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
     Button registerBtn;
     ImageView landingImg;
     FirebaseAuth mAuth;
+    DatabaseReference mDatabase;
 
     @Override
     public void onRegister(String fullName, String email, String password) {
@@ -63,7 +66,11 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
             return insets;
         });
 
+        // auth instance
         mAuth = FirebaseAuth.getInstance();
+
+        // database reference
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         loginBtn = findViewById(R.id.loginBtn);
         registerBtn = findViewById(R.id.registerBtn);
@@ -105,6 +112,8 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
                         if (task.isSuccessful()) {
                             // User registered successfully
                             FirebaseUser user = mAuth.getCurrentUser();
+                            writeNewUser(user.getUid(), fullName, email);
+
                             Toast.makeText(MainActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
 
                             // Dismiss RegisterBottomSheet and show LoginBottomSheet
@@ -125,6 +134,12 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
         if (registerBottomSheet != null) {
             registerBottomSheet.dismiss();
         }
+    }
+
+    public void writeNewUser(String userId, String name, String email) {
+        User user = new User(name, email);
+
+        mDatabase.child("users").child(userId).setValue(user);
     }
 
     void handleLogin(String email, String password) {

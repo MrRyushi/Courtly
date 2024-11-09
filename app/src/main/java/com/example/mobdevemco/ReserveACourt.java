@@ -4,8 +4,10 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CalendarView;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
@@ -13,12 +15,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 public class ReserveACourt extends AppCompatActivity {
 
     private CheckBox time6amTo7am, time7amTo8am, time8amTo9am, time9amTo10am, time10amTo11am, time11amTo12pm, time12pmTo1pm,
             time1pmTo2pm, time2pmTo3pm, time3pmTo4pm, time4pmTo5pm, time5pmTo6pm, time6pmTo7pm, time7pmTo8pm;
+
+    private DatabaseReference mDatabase;
+    private CalendarView calendarView;
+    private String selectedDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +44,9 @@ public class ReserveACourt extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // database reference
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         // Initialize checkboxes
         time6amTo7am = findViewById(R.id.time6amTo7am);
@@ -46,6 +63,9 @@ public class ReserveACourt extends AppCompatActivity {
         time5pmTo6pm = findViewById(R.id.time5pmTo6pm);
         time6pmTo7pm = findViewById(R.id.time6pmTo7pm);
         time7pmTo8pm = findViewById(R.id.time7pmTo8pm);
+
+        // Initialize calendar view
+        calendarView = findViewById(R.id.calendarView);
 
         // court name
         TextView courtName = findViewById(R.id.courtName);
@@ -139,7 +159,53 @@ public class ReserveACourt extends AppCompatActivity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 // Code to handle reservation confirmation
                 dialogInterface.dismiss();
-                showSuccessMessage();
+
+                try {
+                    // Save reservation to database
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    if (user != null) {
+                        CalendarView calendarView = findViewById(R.id.calendarView);
+
+                        // Get the selected date from CalendarView
+                        long selectedDateInMillis = calendarView.getDate();
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTimeInMillis(selectedDateInMillis);
+
+                        // Format the date to "day/month/year"
+                        String selectedDate = calendar.get(Calendar.DAY_OF_MONTH) + "/" +
+                                (calendar.get(Calendar.MONTH) + 1) + "/" +
+                                calendar.get(Calendar.YEAR);
+
+                        // Create a single reservation for all time slots
+                        Reservations reservation = new Reservations(
+                                getIntent().getStringExtra("courtName"),
+                                selectedTimeSlots,  // Pass the entire list of selected time slots
+                                selectedDate,
+                                user.getUid()
+                        );
+
+                        // Save the single reservation
+                        mDatabase.child("reservations").push().setValue(reservation)
+                                .addOnSuccessListener(aVoid -> {
+                                    showSuccessMessage();  // Display success message upon successful save
+                                })
+                                .addOnFailureListener(e -> {
+                                    e.printStackTrace();
+                                    Toast toast = Toast.makeText(ReserveACourt.this, "An error occurred while reserving the court", Toast.LENGTH_SHORT);
+                                    toast.show();
+                                });
+
+                    } else {
+                        // No user is signed in
+                        Toast.makeText(ReserveACourt.this, "Please sign in to reserve a court", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(ReserveACourt.this, "An error occurred while reserving the court", Toast.LENGTH_SHORT).show();
+                }
+
+
+
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
