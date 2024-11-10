@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
     }
 
     public void writeNewUser(String userId, String name, String email) {
-        User user = new User(name, email);
+        User user = new User(name, email, false, "No application");
 
         mDatabase.child("users").child(userId).setValue(user);
     }
