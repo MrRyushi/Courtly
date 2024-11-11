@@ -8,6 +8,8 @@ public class Reservations {
     private String date;
     private String userId;
 
+
+
     public Reservations(String courtName, List<String> timeSlots, String date, String userId) {
         this.courtName = courtName;
         this.timeSlots = timeSlots;

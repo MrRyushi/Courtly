@@ -2,6 +2,7 @@ package com.example.mobdevemco;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +21,6 @@ public class LoginBottomSheet extends BottomSheetDialogFragment {
     TextView forgotPasswordTxt;
     Button loginBtn;
     EditText editTextEmail, editTextPassword;
-
 
 
     public interface OnLoginListener {
@@ -48,8 +48,7 @@ public class LoginBottomSheet extends BottomSheetDialogFragment {
         }
     }
 
-
-
+    
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -105,8 +104,17 @@ public class LoginBottomSheet extends BottomSheetDialogFragment {
             return;
         }
 
+        // Save login status in SharedPreferences
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("email", email);
+        editor.putBoolean("isLoggedIn", true);
+        editor.apply();
+
         // Pass data back to MainActivity via listener
         listener.onLogin(email, password);
+
+        dismiss();
     }
 
     void handleResetPasswordClick(View v){

@@ -2,7 +2,9 @@ package com.example.mobdevemco;
 
 import static android.content.ContentValues.TAG;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
     ImageView landingImg;
     FirebaseAuth mAuth;
     DatabaseReference mDatabase;
+    SharedPreferences sharedPreferences;
 
     @Override
     public void onRegister(String fullName, String email, String password) {
@@ -71,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
 
         // database reference
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        sharedPreferences = getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+
 
         loginBtn = findViewById(R.id.loginBtn);
         registerBtn = findViewById(R.id.registerBtn);
@@ -83,12 +88,16 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
     }
 
     @Override
-    public void onStart() {
+    protected void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
-            currentUser.reload();
+
+        // Check if user is already signed in
+        boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+        if (currentUser != null && isLoggedIn) {
+            // Directly go to Home
+            startActivity(new Intent(this, Home.class));
+            finish();
         }
     }
 
@@ -153,6 +162,10 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
                             Toast.makeText(MainActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
 
                             // Dismiss LoginBottomSheet
+                            sharedPreferences.edit()
+                                    .putBoolean("isLoggedIn", true)
+                                    .putString("userId", email)
+                                    .apply();
                             dismissLoginBottomSheet();
 
                             // Navigate to the main screen or update UI
@@ -197,4 +210,5 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
     private void showLoginBottomSheet() {
         new LoginBottomSheet().show(getSupportFragmentManager(), "LoginBottomSheet");
     }
+
 }

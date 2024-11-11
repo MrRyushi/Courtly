@@ -94,10 +94,12 @@ public class RegisterBottomSheet extends BottomSheetDialogFragment {
             Toast.makeText(getContext(), "Please fill all the fields", Toast.LENGTH_SHORT).show();
             return;
         }
+        dismiss();
 
         // Pass data back to MainActivity via listener
         listener.onRegister(fullName, email, password);
         progressBar.setVisibility(View.GONE);
+
     }
 
 }

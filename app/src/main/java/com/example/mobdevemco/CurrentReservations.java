@@ -1,8 +1,10 @@
 package com.example.mobdevemco;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResult;
@@ -21,10 +23,19 @@ public class CurrentReservations extends AppCompatActivity {
     private CurrentReservationsAdapter reservationAdapter;
     private ActivityResultLauncher<Intent> myActivityResultLauncher;
 
+    private TextView accountName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+
+        // Get account name from SharedPreferences
+        SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
+        String userId = sharedPreferences.getString("userId", "Account Name"); // Default to "Account Name" if not found
+
+        accountName = findViewById(R.id.accountName);
+        accountName.setText(userId);
 
         // get data from database here
         currentReservationData = new ReservationData[]{
