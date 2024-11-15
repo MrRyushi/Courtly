@@ -15,6 +15,10 @@ public class Reservations {
         this.userId = userId;
     }
 
+    // No-argument constructor required for Firebase
+    public Reservations() {
+    }
+
     public String getCourtName() {
         return courtName;
     }

@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -18,8 +19,11 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -80,6 +84,32 @@ public class ReserveACourt extends AppCompatActivity {
             }
         });
 
+        // selected date
+        // Get the selected date from CalendarView
+        long selectedDateInMillis = calendarView.getDate();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(selectedDateInMillis);
+
+        // Format the date to "day/month/year"
+        selectedDate = calendar.get(Calendar.DAY_OF_MONTH) + "/" +
+                (calendar.get(Calendar.MONTH) + 1) + "/" +
+                calendar.get(Calendar.YEAR);
+
+        // Initialize calendar view and set the date change listener
+        calendarView = findViewById(R.id.calendarView);
+        calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+            // Format the date to "day/month/year"
+            selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
+
+            // Clear all time slots to reset availability
+            enableAllTimeSlots();
+
+            // Refresh the availability for the selected date
+            addReservationListener();
+        });
+
+        // Add the listener to monitor reservations
+        addReservationListener();
     }
 
     public void handleBackBtnClick(View v){
@@ -172,7 +202,7 @@ public class ReserveACourt extends AppCompatActivity {
                         calendar.setTimeInMillis(selectedDateInMillis);
 
                         // Format the date to "day/month/year"
-                        String selectedDate = calendar.get(Calendar.DAY_OF_MONTH) + "/" +
+                        selectedDate = calendar.get(Calendar.DAY_OF_MONTH) + "/" +
                                 (calendar.get(Calendar.MONTH) + 1) + "/" +
                                 calendar.get(Calendar.YEAR);
 
@@ -223,7 +253,121 @@ public class ReserveACourt extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("Reservation Successful")
                 .setMessage("Your time slots have been reserved successfully!")
-                .setPositiveButton("OK", null)
+                .setPositiveButton("OK", (dialog, which) -> resetForm()) // Reset form on dialog dismissal
                 .show();
     }
+
+
+    // Method to add the Firebase listener
+    private void addReservationListener() {
+        mDatabase.child("reservations").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot reservationSnapshot : snapshot.getChildren()) {
+                        Reservations reservation = reservationSnapshot.getValue(Reservations.class);
+                        
+                        if (reservation != null && selectedDate.equals(reservation.getDate())) {
+                            disableReservedTimeSlots(reservation.getTimeSlots());
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(ReserveACourt.this, "Failed to load reservations", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // Method to disable timeslots based on reserved time slots
+    private void disableReservedTimeSlots(List<String> reservedTimeSlots) {
+        // Clear all timeslots first (optional, depends on your logic)
+        enableAllTimeSlots();
+
+        // Iterate through the reserved times and disable the checkboxes
+        for (String timeSlot : reservedTimeSlots) {
+            switch (timeSlot) {
+                case "6:00 AM - 7:00 AM":
+                    time6amTo7am.setEnabled(false);
+                    break;
+                case "7:00 AM - 8:00 AM":
+                    time7amTo8am.setEnabled(false);
+                    break;
+                case "8:00 AM - 9:00 AM":
+                    time8amTo9am.setEnabled(false);
+                    break;
+                case "9:00 AM - 10:00 AM":
+                    time9amTo10am.setEnabled(false);
+                    break;
+                case "10:00 AM - 11:00 AM":
+                    time10amTo11am.setEnabled(false);
+                    break;
+                case "11:00 AM - 12:00 PM":
+                    time11amTo12pm.setEnabled(false);
+                    break;
+                case "12:00 PM - 1:00 PM":
+                    time12pmTo1pm.setEnabled(false);
+                    break;
+                case "1:00 PM - 2:00 PM":
+                    time1pmTo2pm.setEnabled(false);
+                    break;
+                case "2:00 PM - 3:00 PM":
+                    time2pmTo3pm.setEnabled(false);
+                    break;
+                case "3:00 PM - 4:00 PM":
+                    time3pmTo4pm.setEnabled(false);
+                    break;
+                case "4:00 PM - 5:00 PM":
+                    time4pmTo5pm.setEnabled(false);
+                    break;
+                case "5:00 PM - 6:00 PM":
+                    time5pmTo6pm.setEnabled(false);
+                    break;
+                case "6:00 PM - 7:00 PM":
+                    time6pmTo7pm.setEnabled(false);
+                    break;
+                case "7:00 PM - 8:00 PM":
+                    time7pmTo8pm.setEnabled(false);
+                    break;
+            }
+        }
+    }
+
+    // Method to enable all timeslots
+    private void enableAllTimeSlots() {
+        time6amTo7am.setEnabled(true);
+        time7amTo8am.setEnabled(true);
+        time8amTo9am.setEnabled(true);
+        time9amTo10am.setEnabled(true);
+        time10amTo11am.setEnabled(true);
+        time11amTo12pm.setEnabled(true);
+        time12pmTo1pm.setEnabled(true);
+        time1pmTo2pm.setEnabled(true);
+        time2pmTo3pm.setEnabled(true);
+        time3pmTo4pm.setEnabled(true);
+        time4pmTo5pm.setEnabled(true);
+        time5pmTo6pm.setEnabled(true);
+        time6pmTo7pm.setEnabled(true);
+        time7pmTo8pm.setEnabled(true);
+    }
+
+    private void resetForm() {
+        time6amTo7am.setChecked(false);
+        time7amTo8am.setChecked(false);
+        time8amTo9am.setChecked(false);
+        time9amTo10am.setChecked(false);
+        time10amTo11am.setChecked(false);
+        time11amTo12pm.setChecked(false);
+        time12pmTo1pm.setChecked(false);
+        time1pmTo2pm.setChecked(false);
+        time2pmTo3pm.setChecked(false);
+        time3pmTo4pm.setChecked(false);
+        time4pmTo5pm.setChecked(false);
+        time5pmTo6pm.setChecked(false);
+        time6pmTo7pm.setChecked(false);
+        time7pmTo8pm.setChecked(false);
+    }
+
 }
