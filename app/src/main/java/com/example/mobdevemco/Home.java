@@ -14,12 +14,26 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -33,6 +47,10 @@ public class Home extends AppCompatActivity {
     private CourtAdapter courtAdapter;
     public boolean isUserAMember = false;
     private ImageView logoutBtn;
+    private DatabaseReference mDatabase;
+    private Object reservations;
+    String user_uid;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +96,9 @@ public class Home extends AppCompatActivity {
 
         courtAdapter = new CourtAdapter(courtData, Home.this, myActivityResultLauncher);
         recyclerView.setAdapter(courtAdapter);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        user_uid = getIntent().getStringExtra("user_uid");
+        getLatestReservation(user_uid);
     }
 
     public void handleReservationsBtnClick(View view) {
@@ -146,5 +167,67 @@ public class Home extends AppCompatActivity {
         startActivity(new Intent(this, MainActivity.class));
         finish();
     }
+    public void getLatestReservation(String userId) {
+        // Retrieve data from Firebase
+        mDatabase.child("reservations").get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.e("firebase", "Error getting data", task.getException());
+                return;
+            }
+
+            Map<String, Object> reservations = (Map<String, Object>) task.getResult().getValue();
+            if (reservations == null) {
+                Log.i("firebase", "No reservations found.");
+                return;
+            }
+
+            String latestReservationKey = null;
+            Date latestDateTime = null;
+
+            // Date format expected in reservationDateTime
+            SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+            dateTimeFormat.setTimeZone(TimeZone.getTimeZone("Asia/Hong_Kong"));
+
+            try {
+                for (Map.Entry<String, Object> entry : reservations.entrySet()) {
+                    Map<String, Object> reservation = (Map<String, Object>) entry.getValue();
+
+                    // Check if reservation belongs to the given user
+                    if (isValidReservation(reservation, userId)) {
+                        // Get reservationDateTime from the reservation
+                        String reservationDateTimeString = (String) reservation.get("reservationDateTime");
+                        if (reservationDateTimeString != null) {
+                            Date reservationDateTime = dateTimeFormat.parse(reservationDateTimeString);
+
+                            // Check if this is the most recent reservation
+                            if (latestDateTime == null || (reservationDateTime != null && reservationDateTime.after(latestDateTime))) {
+                                latestDateTime = reservationDateTime;
+                                latestReservationKey = entry.getKey();
+                            }
+                        }
+                    }
+                }
+
+                if (latestReservationKey != null) {
+                    Log.i("firebase", "Most recent reservation: " + latestReservationKey + " on " + dateTimeFormat.format(latestDateTime));
+                } else {
+                    Log.i("firebase", "No matching reservations found.");
+                }
+            } catch (Exception e) {
+                Log.e("firebase", "Error parsing dates", e);
+            }
+        });
+    }
+
+
+    private boolean isValidReservation(Map<String, Object> reservation, String userId) {
+        return reservation != null
+                && reservation.containsKey("userId")
+                && reservation.containsKey("date")
+                && reservation.containsKey("timeSlots")
+                && userId.equals(reservation.get("userId"));
+    }
+
+
 
 }

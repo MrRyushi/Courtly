@@ -25,9 +25,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class ReserveACourt extends AppCompatActivity {
 
@@ -194,24 +198,31 @@ public class ReserveACourt extends AppCompatActivity {
                     // Save reservation to database
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if (user != null) {
-                        CalendarView calendarView = findViewById(R.id.calendarView);
 
-                        // Get the selected date from CalendarView
-                        long selectedDateInMillis = calendarView.getDate();
+                        // Remove redundant date fetching logic from this part
+                        CalendarView calendarView = findViewById(R.id.calendarView);
+                        long selectedDateInMillis = calendarView.getDate();  // Potential issue
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTimeInMillis(selectedDateInMillis);
 
-                        // Format the date to "day/month/year"
-                        selectedDate = calendar.get(Calendar.DAY_OF_MONTH) + "/" +
-                                (calendar.get(Calendar.MONTH) + 1) + "/" +
-                                calendar.get(Calendar.YEAR);
+                        // Instead, use the already-updated `selectedDate`
+                        System.out.println("selected date: " + selectedDate);
+
+
+                        // Set the timezone to Hong Kong (Asia/Hong_Kong)
+                        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+                        dateTimeFormat.setTimeZone(TimeZone.getTimeZone("Asia/Hong_Kong"));
+
+                        // Get current date and time in Hong Kong timezone
+                        String reservationDateTime = dateTimeFormat.format(new Date()); // e.g., "16/11/2024 15:30:45"
 
                         // Create a single reservation for all time slots
                         Reservations reservation = new Reservations(
                                 getIntent().getStringExtra("courtName"),
                                 selectedTimeSlots,  // Pass the entire list of selected time slots
-                                selectedDate,
-                                user.getUid()
+                                selectedDate,       // Reserved date (selected by the user)
+                                user.getUid(),
+                                reservationDateTime // Reservation creation date and time in Hong Kong timezone
                         );
 
                         // Save the single reservation
@@ -260,14 +271,21 @@ public class ReserveACourt extends AppCompatActivity {
 
     // Method to add the Firebase listener
     private void addReservationListener() {
+        // Get the selected court name from the intent
+        String courtName = getIntent().getStringExtra("courtName");
+
         mDatabase.child("reservations").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot reservationSnapshot : snapshot.getChildren()) {
                         Reservations reservation = reservationSnapshot.getValue(Reservations.class);
-                        
-                        if (reservation != null && selectedDate.equals(reservation.getDate())) {
+
+                        // Ensure the reservation is valid and matches the selected date and court name
+                        if (reservation != null
+                                && selectedDate.equals(reservation.getDate())
+                                && courtName.equals(reservation.getCourtName())) {
+                            // Disable reserved time slots
                             disableReservedTimeSlots(reservation.getTimeSlots());
                         }
                     }
