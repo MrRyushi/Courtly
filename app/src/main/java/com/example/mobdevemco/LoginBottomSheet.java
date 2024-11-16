@@ -33,6 +33,9 @@ public class LoginBottomSheet extends BottomSheetDialogFragment {
 
     private OnLoginListener listener;
     private OnResetPasswordListener resetListener;
+    public void dismissOnSuccess() {
+        dismiss();
+    }
 
     @Override
     public void onAttach(@NonNull Context context) {
