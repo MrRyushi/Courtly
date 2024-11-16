@@ -57,9 +57,9 @@ public class Home extends AppCompatActivity {
                             Intent data = result.getData();
                             if(data != null){
                                 String membershipApplication = data.getStringExtra("membershipApplication");
-                               if(membershipApplication != null && membershipApplication.equals("success")){
-                                   isUserAMember = true;
-                               }
+                                if(membershipApplication != null && membershipApplication.equals("success")){
+                                    isUserAMember = true;
+                                }
                             }
                         }
                     }
@@ -103,21 +103,20 @@ public class Home extends AppCompatActivity {
                 // Get the membership status from Firebase
                 String membershipStatus = task.getResult().getValue(String.class);
 
-                // Initialize the intent to launch based on membership status
-                Intent intent = new Intent();
-
                 // Get SharedPreferences instance
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(Home.this);
                 boolean hasSeenMembershipSuccess = prefs.getBoolean("hasSeenMembershipSuccess", false);
 
                 if (membershipStatus != null) {
-                    if ("No Application".equals(membershipStatus)) {
+                    // Initialize the intent to launch based on membership status
+                    Intent intent = null;
+                    if ("No application".equals(membershipStatus)) {
                         // If no membership application has been made, go to MembershipApplication
                         intent = new Intent(Home.this, MembershipApplication.class);
-                    } else if ("Sent request".equals(membershipStatus)) {
+                    } else if ("Requested".equals(membershipStatus)) {
                         // If the membership request has been sent, go to MembershipPending
                         intent = new Intent(Home.this, MembershipPending.class);
-                    } else if ("Completed".equals(membershipStatus) && !hasSeenMembershipSuccess) {
+                    } else if ("Approved".equals(membershipStatus) && !hasSeenMembershipSuccess) {
                         // If the membership is completed and this is the first time the user opens the screen, show MembershipSuccess
                         intent = new Intent(Home.this, MembershipSuccess.class);
 
@@ -125,13 +124,13 @@ public class Home extends AppCompatActivity {
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putBoolean("hasSeenMembershipSuccess", true);
                         editor.apply();
-                    } else if ("Completed".equals(membershipStatus) && hasSeenMembershipSuccess) {
+                    } else if ("Approved".equals(membershipStatus) && hasSeenMembershipSuccess) {
                         // If the membership is completed and the user has already seen the MembershipSuccess screen, go to MembershipSuccess
                         intent = new Intent(Home.this, MembershipPage.class);
                     }
 
                     // Launch the appropriate activity using the result launcher
-                    myActivityResultLauncher.launch(intent);
+                    startActivity(intent);
                 }
             } else {
                 // Handle failure to fetch membership status

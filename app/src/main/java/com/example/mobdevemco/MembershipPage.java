@@ -1,6 +1,7 @@
 package com.example.mobdevemco;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,5 +23,8 @@ public class MembershipPage extends AppCompatActivity {
         });
     }
 
+    public void handleBackButton(View view) {
+        finish();
+    }
 
 }

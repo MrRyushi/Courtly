@@ -48,7 +48,7 @@ public class MembershipApplication extends AppCompatActivity {
         builder.setMessage("Your membership application has been sent successfully.");
 
         // Update the membership status in Firebase database
-        updateMembershipStatus("Sent request");
+        updateMembershipStatus("Requested");
 
         // Add a button to dismiss the dialog
         builder.setPositiveButton("OK", (dialog, which) -> {
