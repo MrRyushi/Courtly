@@ -2,7 +2,10 @@ package com.example.mobdevemco;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -17,6 +20,10 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class Home extends AppCompatActivity {
 
@@ -78,9 +85,59 @@ public class Home extends AppCompatActivity {
         myActivityResultLauncher.launch(intent);
     }
 
-    public void handleMembershipButtonClick(View v){
-        Intent intent = isUserAMember ? new Intent(Home.this, MembershipPending.class) : new Intent(Home.this, MembershipApplication.class);
-        myActivityResultLauncher.launch(intent);
+//    public void handleMembershipButtonClick(View v){
+//        Intent intent = isUserAMember ? new Intent(Home.this, MembershipPending.class) : new Intent(Home.this, MembershipApplication.class);
+//        myActivityResultLauncher.launch(intent);
+//    }
+
+    public void handleMembershipButtonClick(View v) {
+        // Get the current user's ID
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        // Reference to the user's membership status in Firebase
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId);
+
+        // Fetch membership status from the database
+        userRef.child("membershipStatus").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                // Get the membership status from Firebase
+                String membershipStatus = task.getResult().getValue(String.class);
+
+                // Initialize the intent to launch based on membership status
+                Intent intent = new Intent();
+
+                // Get SharedPreferences instance
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(Home.this);
+                boolean hasSeenMembershipSuccess = prefs.getBoolean("hasSeenMembershipSuccess", false);
+
+                if (membershipStatus != null) {
+                    if ("No Application".equals(membershipStatus)) {
+                        // If no membership application has been made, go to MembershipApplication
+                        intent = new Intent(Home.this, MembershipApplication.class);
+                    } else if ("Sent request".equals(membershipStatus)) {
+                        // If the membership request has been sent, go to MembershipPending
+                        intent = new Intent(Home.this, MembershipPending.class);
+                    } else if ("Completed".equals(membershipStatus) && !hasSeenMembershipSuccess) {
+                        // If the membership is completed and this is the first time the user opens the screen, show MembershipSuccess
+                        intent = new Intent(Home.this, MembershipSuccess.class);
+
+                        // Update the SharedPreferences to indicate that the user has seen the MembershipSuccess screen
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putBoolean("hasSeenMembershipSuccess", true);
+                        editor.apply();
+                    } else if ("Completed".equals(membershipStatus) && hasSeenMembershipSuccess) {
+                        // If the membership is completed and the user has already seen the MembershipSuccess screen, go to MembershipSuccess
+                        intent = new Intent(Home.this, MembershipPage.class);
+                    }
+
+                    // Launch the appropriate activity using the result launcher
+                    myActivityResultLauncher.launch(intent);
+                }
+            } else {
+                // Handle failure to fetch membership status
+                Log.e("HomeActivity", "Failed to fetch membership status");
+            }
+        });
     }
 
     public void handleLogoutBtnClick(View v) {
