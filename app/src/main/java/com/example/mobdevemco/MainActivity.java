@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
     ImageView landingImg;
     FirebaseAuth mAuth;
     DatabaseReference mDatabase;
+    String user_uid;
 
     @Override
     public void onRegister(String fullName, String email, String password) {
@@ -151,12 +152,14 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
                             // Sign in success, display a success message
                             FirebaseUser user = mAuth.getCurrentUser();
                             Toast.makeText(MainActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+                            user_uid = user.getUid();
 
                             // Dismiss LoginBottomSheet
                             dismissLoginBottomSheet();
 
                             // Navigate to the main screen or update UI
                             Intent i = new Intent(MainActivity.this, Home.class);
+                            i.putExtra("user_uid", user_uid);
                             startActivity(i);
                         } else {
                             // If sign in fails, display an error message
