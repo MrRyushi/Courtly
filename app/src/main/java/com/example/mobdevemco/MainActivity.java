@@ -96,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
         // Start the LoginBottomSheet
         openLoginBottomSheet();
     }
-
     void registerBtnOnClick(View v) {
         // Start the RegisterBottomSheet
         RegisterBottomSheet bottomSheet = new RegisterBottomSheet();

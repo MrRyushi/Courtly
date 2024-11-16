@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResult;
@@ -24,6 +25,7 @@ public class Home extends AppCompatActivity {
     private CourtData[] courtData;
     private CourtAdapter courtAdapter;
     public boolean isUserAMember = false;
+    private ImageView logoutBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,5 +83,12 @@ public class Home extends AppCompatActivity {
         myActivityResultLauncher.launch(intent);
     }
 
+    public void handleLogoutBtnClick(View v) {
+        // sqlite
+
+        // Redirect to the login screen
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
+    }
 
 }
