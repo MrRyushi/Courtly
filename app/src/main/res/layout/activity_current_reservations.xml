@@ -35,7 +35,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_bold"
-                android:text="Account Name!"
                 android:textColor="#F2E8C6"
                 android:textSize="32dp" />
 

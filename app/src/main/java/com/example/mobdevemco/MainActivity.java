@@ -94,16 +94,18 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
 
     void loginBtnOnClick(View v) {
         // Start the LoginBottomSheet
-        LoginBottomSheet bottomSheet = new LoginBottomSheet();
-        bottomSheet.show(getSupportFragmentManager(), bottomSheet.getTag());
+        openLoginBottomSheet();
     }
-
     void registerBtnOnClick(View v) {
         // Start the RegisterBottomSheet
         RegisterBottomSheet bottomSheet = new RegisterBottomSheet();
-        bottomSheet.show(getSupportFragmentManager(), bottomSheet.getTag());
+        bottomSheet.show(getSupportFragmentManager(), RegisterBottomSheet.class.getSimpleName());
     }
 
+    void openLoginBottomSheet() {
+        LoginBottomSheet bottomSheet = new LoginBottomSheet();
+        bottomSheet.show(getSupportFragmentManager(), LoginBottomSheet.class.getSimpleName());
+    }
     void handleRegister(String email, String password, String fullName) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -113,12 +115,17 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
                             // User registered successfully
                             FirebaseUser user = mAuth.getCurrentUser();
                             writeNewUser(user.getUid(), fullName, email);
-
                             Toast.makeText(MainActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
 
-                            // Dismiss RegisterBottomSheet and show LoginBottomSheet
-                            dismissRegisterBottomSheet();
-                            showLoginBottomSheet();
+                            // Notify the RegisterBottomSheet to close
+                            RegisterBottomSheet registerBottomSheet = (RegisterBottomSheet)
+                                    getSupportFragmentManager().findFragmentByTag(RegisterBottomSheet.class.getSimpleName());
+                            if (registerBottomSheet != null) {
+                                registerBottomSheet.dismiss();
+                            }
+
+                            // Open the LoginBottomSheet
+                            openLoginBottomSheet();
                         } else {
                             // Registration failed, display a message
                             Toast.makeText(MainActivity.this, "Registration failed: " + task.getException().getMessage(),
@@ -128,13 +135,6 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
                 });
     }
 
-    // Method to dismiss RegisterBottomSheet
-    private void dismissRegisterBottomSheet() {
-        RegisterBottomSheet registerBottomSheet = (RegisterBottomSheet) getSupportFragmentManager().findFragmentByTag("RegisterBottomSheet");
-        if (registerBottomSheet != null) {
-            registerBottomSheet.dismiss();
-        }
-    }
 
     public void writeNewUser(String userId, String name, String email) {
         User user = new User(name, email, false, "No application");
@@ -148,18 +148,21 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, display a success message
                             FirebaseUser user = mAuth.getCurrentUser();
                             Toast.makeText(MainActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
 
-                            // Dismiss LoginBottomSheet
-                            dismissLoginBottomSheet();
-
-                            // Navigate to the main screen or update UI
+                            // Navigate to the Home activity
                             Intent i = new Intent(MainActivity.this, Home.class);
                             startActivity(i);
+
+                            // Notify the bottom sheet to dismiss (if it is still visible)
+                            LoginBottomSheet bottomSheet = (LoginBottomSheet)
+                                    getSupportFragmentManager().findFragmentByTag(LoginBottomSheet.class.getSimpleName());
+                            if (bottomSheet != null) {
+                                bottomSheet.dismissOnSuccess();
+                            }
                         } else {
-                            // If sign in fails, display an error message
+                            // Notify the user about the failure
                             Toast.makeText(MainActivity.this, "Login failed: Email or password is incorrect",
                                     Toast.LENGTH_SHORT).show();
                         }
@@ -167,13 +170,8 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
                 });
     }
 
-    // Method to dismiss LoginBottomSheet
-    private void dismissLoginBottomSheet() {
-        LoginBottomSheet loginBottomSheet = (LoginBottomSheet) getSupportFragmentManager().findFragmentByTag("LoginBottomSheet");
-        if (loginBottomSheet != null) {
-            loginBottomSheet.dismiss();
-        }
-    }
+
+
 
     void handleResetPassword(String email) {
         mAuth.sendPasswordResetEmail(email)
@@ -189,12 +187,5 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
                         }
                     }
                 });
-    }
-
-
-
-    // Method to show LoginBottomSheet
-    private void showLoginBottomSheet() {
-        new LoginBottomSheet().show(getSupportFragmentManager(), "LoginBottomSheet");
     }
 }

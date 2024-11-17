@@ -32,6 +32,10 @@ public class RegisterBottomSheet extends BottomSheetDialogFragment {
 
     private OnRegisterListener listener;
 
+    public void dismissOnSuccess() {
+        dismiss();
+    }
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
