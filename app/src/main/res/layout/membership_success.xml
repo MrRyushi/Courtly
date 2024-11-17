@@ -58,6 +58,7 @@
         android:fontFamily="@font/poppins_regular"
         android:gravity="center"
         android:text="Check Member Status"
+        android:onClick="handleCheckMembershipStatusButton"
         android:textColor="#333333"
         android:textSize="24sp"
         app:cornerRadius="10dp"
@@ -71,8 +72,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="30dp"
+        android:onClick="handleBackButton"
         app:tint="#E9D8B8"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/arrow_back_black" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
