@@ -114,6 +114,9 @@ public class ReserveACourt extends AppCompatActivity {
 
         // Add the listener to monitor reservations
         addReservationListener();
+
+        // Prefill the time slots
+        prefillTimeSlots();
     }
 
     public void handleBackBtnClick(View v){
@@ -386,6 +389,60 @@ public class ReserveACourt extends AppCompatActivity {
         time5pmTo6pm.setChecked(false);
         time6pmTo7pm.setChecked(false);
         time7pmTo8pm.setChecked(false);
+    }
+
+    private void prefillTimeSlots(){
+        // Get the selected time slots from the intent
+        String timeSlots = getIntent().getStringExtra("timeSlots");
+        if(timeSlots != null){
+            String[] slots = timeSlots.split(",");
+            for(String slot : slots){
+                switch (slot.trim()) {
+                    case "6:00 AM - 7:00 AM":
+                        time6amTo7am.setChecked(true);
+                        break;
+                    case "7:00 AM - 8:00 AM":
+                        time7amTo8am.setChecked(true);
+                        break;
+                    case "8:00 AM - 9:00 AM":
+                        time8amTo9am.setChecked(true);
+                        break;
+                    case "9:00 AM - 10:00 AM":
+                        time9amTo10am.setChecked(true);
+                        break;
+                    case "10:00 AM - 11:00 AM":
+                        time10amTo11am.setChecked(true);
+                        break;
+                    case "11:00 AM - 12:00 PM":
+                        time11amTo12pm.setChecked(true);
+                        break;
+                    case "12:00 PM - 1:00 PM":
+                        time12pmTo1pm.setChecked(true);
+                        break;
+                    case "1:00 PM - 2:00 PM":
+                        time1pmTo2pm.setChecked(true);
+                        break;
+                    case "2:00 PM - 3:00 PM":
+                        time2pmTo3pm.setChecked(true);
+                        break;
+                    case "3:00 PM - 4:00 PM":
+                        time3pmTo4pm.setChecked(true);
+                        break;
+                    case "4:00 PM - 5:00 PM":
+                        time4pmTo5pm.setChecked(true);
+                        break;
+                    case "5:00 PM - 6:00 PM":
+                        time5pmTo6pm.setChecked(true);
+                        break;
+                    case "6:00 PM - 7:00 PM":
+                        time6pmTo7pm.setChecked(true);
+                        break;
+                    case "7:00 PM - 8:00 PM":
+                        time7pmTo8pm.setChecked(true);
+                        break;
+                }
+            }
+        }
     }
 
 }
