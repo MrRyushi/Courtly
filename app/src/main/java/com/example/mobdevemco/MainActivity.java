@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
     ImageView landingImg;
     FirebaseAuth mAuth;
     DatabaseReference mDatabase;
+    String user_uid;
 
     @Override
     public void onRegister(String fullName, String email, String password) {
@@ -150,9 +151,11 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
                             Toast.makeText(MainActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+                            user_uid = user.getUid();
 
                             // Navigate to the Home activity
                             Intent i = new Intent(MainActivity.this, Home.class);
+                            i.putExtra("user_uid", user_uid);
                             startActivity(i);
 
                             // Notify the bottom sheet to dismiss (if it is still visible)

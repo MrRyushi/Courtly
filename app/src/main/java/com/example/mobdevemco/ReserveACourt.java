@@ -25,9 +25,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class ReserveACourt extends AppCompatActivity {
 
@@ -110,6 +114,9 @@ public class ReserveACourt extends AppCompatActivity {
 
         // Add the listener to monitor reservations
         addReservationListener();
+
+        // Prefill the time slots
+        prefillTimeSlots();
     }
 
     public void handleBackBtnClick(View v){
@@ -194,24 +201,31 @@ public class ReserveACourt extends AppCompatActivity {
                     // Save reservation to database
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if (user != null) {
-                        CalendarView calendarView = findViewById(R.id.calendarView);
 
-                        // Get the selected date from CalendarView
-                        long selectedDateInMillis = calendarView.getDate();
+                        // Remove redundant date fetching logic from this part
+                        CalendarView calendarView = findViewById(R.id.calendarView);
+                        long selectedDateInMillis = calendarView.getDate();  // Potential issue
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTimeInMillis(selectedDateInMillis);
 
-                        // Format the date to "day/month/year"
-                        selectedDate = calendar.get(Calendar.DAY_OF_MONTH) + "/" +
-                                (calendar.get(Calendar.MONTH) + 1) + "/" +
-                                calendar.get(Calendar.YEAR);
+                        // Instead, use the already-updated `selectedDate`
+                        System.out.println("selected date: " + selectedDate);
+
+
+                        // Set the timezone to Hong Kong (Asia/Hong_Kong)
+                        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+                        dateTimeFormat.setTimeZone(TimeZone.getTimeZone("Asia/Hong_Kong"));
+
+                        // Get current date and time in Hong Kong timezone
+                        String reservationDateTime = dateTimeFormat.format(new Date()); // e.g., "16/11/2024 15:30:45"
 
                         // Create a single reservation for all time slots
                         Reservations reservation = new Reservations(
                                 getIntent().getStringExtra("courtName"),
                                 selectedTimeSlots,  // Pass the entire list of selected time slots
-                                selectedDate,
-                                user.getUid()
+                                selectedDate,       // Reserved date (selected by the user)
+                                user.getUid(),
+                                reservationDateTime // Reservation creation date and time in Hong Kong timezone
                         );
 
                         // Save the single reservation
@@ -260,14 +274,21 @@ public class ReserveACourt extends AppCompatActivity {
 
     // Method to add the Firebase listener
     private void addReservationListener() {
+        // Get the selected court name from the intent
+        String courtName = getIntent().getStringExtra("courtName");
+
         mDatabase.child("reservations").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot reservationSnapshot : snapshot.getChildren()) {
                         Reservations reservation = reservationSnapshot.getValue(Reservations.class);
-                        
-                        if (reservation != null && selectedDate.equals(reservation.getDate())) {
+
+                        // Ensure the reservation is valid and matches the selected date and court name
+                        if (reservation != null
+                                && selectedDate.equals(reservation.getDate())
+                                && courtName.equals(reservation.getCourtName())) {
+                            // Disable reserved time slots
                             disableReservedTimeSlots(reservation.getTimeSlots());
                         }
                     }
@@ -368,6 +389,60 @@ public class ReserveACourt extends AppCompatActivity {
         time5pmTo6pm.setChecked(false);
         time6pmTo7pm.setChecked(false);
         time7pmTo8pm.setChecked(false);
+    }
+
+    private void prefillTimeSlots(){
+        // Get the selected time slots from the intent
+        String timeSlots = getIntent().getStringExtra("timeSlots");
+        if(timeSlots != null){
+            String[] slots = timeSlots.split(",");
+            for(String slot : slots){
+                switch (slot.trim()) {
+                    case "6:00 AM - 7:00 AM":
+                        time6amTo7am.setChecked(true);
+                        break;
+                    case "7:00 AM - 8:00 AM":
+                        time7amTo8am.setChecked(true);
+                        break;
+                    case "8:00 AM - 9:00 AM":
+                        time8amTo9am.setChecked(true);
+                        break;
+                    case "9:00 AM - 10:00 AM":
+                        time9amTo10am.setChecked(true);
+                        break;
+                    case "10:00 AM - 11:00 AM":
+                        time10amTo11am.setChecked(true);
+                        break;
+                    case "11:00 AM - 12:00 PM":
+                        time11amTo12pm.setChecked(true);
+                        break;
+                    case "12:00 PM - 1:00 PM":
+                        time12pmTo1pm.setChecked(true);
+                        break;
+                    case "1:00 PM - 2:00 PM":
+                        time1pmTo2pm.setChecked(true);
+                        break;
+                    case "2:00 PM - 3:00 PM":
+                        time2pmTo3pm.setChecked(true);
+                        break;
+                    case "3:00 PM - 4:00 PM":
+                        time3pmTo4pm.setChecked(true);
+                        break;
+                    case "4:00 PM - 5:00 PM":
+                        time4pmTo5pm.setChecked(true);
+                        break;
+                    case "5:00 PM - 6:00 PM":
+                        time5pmTo6pm.setChecked(true);
+                        break;
+                    case "6:00 PM - 7:00 PM":
+                        time6pmTo7pm.setChecked(true);
+                        break;
+                    case "7:00 PM - 8:00 PM":
+                        time7pmTo8pm.setChecked(true);
+                        break;
+                }
+            }
+        }
     }
 
 }

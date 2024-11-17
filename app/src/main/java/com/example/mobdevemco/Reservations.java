@@ -7,12 +7,14 @@ public class Reservations {
     private List<String> timeSlots; // Change this to a list
     private String date;
     private String userId;
+    private String reservationDateTime; // The exact date and time the reservation was made
 
-    public Reservations(String courtName, List<String> timeSlots, String date, String userId) {
+    public Reservations(String courtName, List<String> timeSlots, String date, String userId, String reservationDateTime) {
         this.courtName = courtName;
         this.timeSlots = timeSlots;
         this.date = date;
         this.userId = userId;
+        this.reservationDateTime = reservationDateTime;
     }
 
     // No-argument constructor required for Firebase
@@ -49,6 +51,14 @@ public class Reservations {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getReservationDateTime() {
+        return reservationDateTime;
+    }
+
+    public void setReservationDateTime(String reservationDateTime) {
+        this.reservationDateTime = reservationDateTime;
     }
 }
 
