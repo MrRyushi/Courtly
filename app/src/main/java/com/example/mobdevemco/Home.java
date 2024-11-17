@@ -1,7 +1,9 @@
 package com.example.mobdevemco;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -42,6 +44,9 @@ public class Home extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private Object reservations;
     String user_uid;
+    Object recentReservation;
+    private boolean hasSeenFragment = false; // Reset every time the app is launched
+
 
 
     @Override
@@ -90,8 +95,40 @@ public class Home extends AppCompatActivity {
         recyclerView.setAdapter(courtAdapter);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         user_uid = getIntent().getStringExtra("user_uid");
-        getLatestReservation(user_uid);
+
+        getLatestReservation(user_uid, () -> {
+            if (!hasSeenFragment) {
+                showWelcomeFragment();
+                hasSeenFragment = true; // Set to true only for the current app session
+            }
+        });
     }
+
+    @SuppressWarnings("unchecked")
+    private void showWelcomeFragment() {
+        RecommendFragment fragment = new RecommendFragment();
+
+        if (recentReservation instanceof Map) {
+            Map<String, Object> recentReservationMap = (Map<String, Object>) recentReservation;
+            String date = (String) recentReservationMap.get("date");
+            List<String> timeSlots = (List<String>) recentReservationMap.get("timeSlots");
+            String courtName = (String) recentReservationMap.get("courtName");
+
+            // Pass the date to the fragment
+            Bundle args = new Bundle();
+            args.putString("reservationDate", date);
+            args.putString("courtName", courtName);
+            args.putString("timeSlots", timeSlots.toString());
+
+            fragment.setArguments(args);
+        } else {
+            Log.e("Home", "recentReservation is not a valid Map object.");
+        }
+
+        // Show the fragment
+        fragment.show(getSupportFragmentManager(), "RecommendFragment");
+    }
+
 
     public void handleReservationsBtnClick(View view) {
         Intent intent = new Intent(Home.this, CurrentReservations.class);
@@ -103,7 +140,7 @@ public class Home extends AppCompatActivity {
         myActivityResultLauncher.launch(intent);
     }
 
-    public void getLatestReservation(String userId) {
+    public void getLatestReservation(String userId, Runnable onFetchComplete) {
         // Retrieve data from Firebase
         mDatabase.child("reservations").get().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
@@ -139,6 +176,7 @@ public class Home extends AppCompatActivity {
                             if (latestDateTime == null || (reservationDateTime != null && reservationDateTime.after(latestDateTime))) {
                                 latestDateTime = reservationDateTime;
                                 latestReservationKey = entry.getKey();
+                                recentReservation = entry.getValue();
                             }
                         }
                     }
@@ -152,6 +190,10 @@ public class Home extends AppCompatActivity {
             } catch (Exception e) {
                 Log.e("firebase", "Error parsing dates", e);
             }
+
+            if (onFetchComplete != null) {
+                onFetchComplete.run();
+            }
         });
     }
 
@@ -163,7 +205,4 @@ public class Home extends AppCompatActivity {
                 && reservation.containsKey("timeSlots")
                 && userId.equals(reservation.get("userId"));
     }
-
-
-
 }
