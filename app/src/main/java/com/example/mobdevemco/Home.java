@@ -54,8 +54,6 @@ public class Home extends AppCompatActivity {
     Object recentReservation;
     private boolean hasSeenFragment = false; // Reset every time the app is launched
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,6 +137,7 @@ public class Home extends AppCompatActivity {
 
     public void handleReservationsBtnClick(View view) {
         Intent intent = new Intent(Home.this, CurrentReservations.class);
+        intent.putExtra("user_uid", user_uid);
         myActivityResultLauncher.launch(intent);
     }
 

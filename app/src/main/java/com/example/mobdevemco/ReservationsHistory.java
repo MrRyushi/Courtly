@@ -22,16 +22,16 @@ public class ReservationsHistory extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
 
-        reservationData = new ReservationData[]{
-                new ReservationData(1,"Court Alpha", "2021-10-01", "10:00 AM to 11:00 AM"),
-                new ReservationData(2,"Court Bravo", "2021-10-02", "11:00 AM to 12:00 PM"),
-                new ReservationData(3,"Court Charlie", "2021-10-03", "12:00 PM to 01:00 PM"),
-                new ReservationData(4,"Court Delta", "2021-10-04", "01:00 PM to 02:00 PM"),
-                new ReservationData(5,"Court Echo", "2021-10-05", "02:00 PM to 03:00 PM"),
-                new ReservationData(6,"Court Foxtrot", "2021-10-06", "03:00 PM to 04:00 PM"),
-                new ReservationData(7,"Court Golf", "2021-10-07", "04:00 PM to 05:00 PM"),
-                new ReservationData(8,"Court Hotel", "2021-10-08", "05:00 PM to 06:00 PM"),
-        };
+//        reservationData = new ReservationData[]{
+//                new ReservationData(1,"Court Alpha", "2021-10-01", "10:00 AM to 11:00 AM"),
+//                new ReservationData(2,"Court Bravo", "2021-10-02", "11:00 AM to 12:00 PM"),
+//                new ReservationData(3,"Court Charlie", "2021-10-03", "12:00 PM to 01:00 PM"),
+//                new ReservationData(4,"Court Delta", "2021-10-04", "01:00 PM to 02:00 PM"),
+//                new ReservationData(5,"Court Echo", "2021-10-05", "02:00 PM to 03:00 PM"),
+//                new ReservationData(6,"Court Foxtrot", "2021-10-06", "03:00 PM to 04:00 PM"),
+//                new ReservationData(7,"Court Golf", "2021-10-07", "04:00 PM to 05:00 PM"),
+//                new ReservationData(8,"Court Hotel", "2021-10-08", "05:00 PM to 06:00 PM"),
+//        };
 
         if(reservationData == null) {
             setContentView(R.layout.activity_empty_reservations_history);
