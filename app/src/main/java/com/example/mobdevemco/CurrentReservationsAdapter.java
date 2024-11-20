@@ -8,9 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 import java.util.Objects;
@@ -72,8 +76,18 @@ public class CurrentReservationsAdapter extends RecyclerView.Adapter<CurrentRese
     public void removeItemById(String reservationId) {
         for (int i = 0; i < reservationDataList.size(); i++) {
             if (Objects.equals(reservationDataList.get(i).getId(), reservationId)) {
-                reservationDataList.remove(i);
-                notifyItemRemoved(i); // Notify RecyclerView about the item removed
+                // Remove from Firebase
+                DatabaseReference reservationRef = FirebaseDatabase.getInstance().getReference("reservations").child(reservationId);
+                int finalI = i;
+                reservationRef.removeValue().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Now remove from local list and notify adapter
+                        reservationDataList.remove(finalI);
+                        notifyItemRemoved(finalI); // Notify RecyclerView about the item removed
+                    } else {
+                        Toast.makeText(context, "Error removing reservation.", Toast.LENGTH_SHORT).show();
+                    }
+                });
                 break;
             }
         }
