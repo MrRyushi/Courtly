@@ -1,6 +1,9 @@
 package com.example.mobdevemco;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.content.Intent;
 
@@ -50,20 +53,38 @@ public class MembershipPending extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String membershipStatus = dataSnapshot.getValue(String.class);
 
-                if (membershipStatus != null && membershipStatus.equals("Approved")) {
-                    // If the membership status becomes "Approved", redirect to MembershipSuccess screen
-                    Intent intent = new Intent(MembershipPending.this, MembershipSuccess.class);
-                    startActivity(intent);
-                    finish(); // Close the current activity
+                if (membershipStatus != null) {
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MembershipPending.this);
+                    boolean hasSeenMembershipSuccess = prefs.getBoolean("hasSeenMembershipSuccess", false);
+
+                    if (membershipStatus.equals("Approved")) {
+                        if (!hasSeenMembershipSuccess) {
+                            // If the user has not seen the MembershipSuccess screen, redirect them
+                            Intent intent = new Intent(MembershipPending.this, MembershipSuccess.class);
+                            startActivity(intent);
+
+                            // Update the SharedPreferences to indicate the user has seen the screen
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putBoolean("hasSeenMembershipSuccess", true);
+                            editor.apply();
+                        } else {
+                            // Redirect to MembershipPage if they've already seen the success screen
+                            Intent intent = new Intent(MembershipPending.this, MembershipPage.class);
+                            startActivity(intent);
+                        }
+                        finish(); // Close the current activity
+                    }
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Handle possible errors here
+                Log.e("MembershipPending", "Database error: " + databaseError.getMessage());
             }
         });
     }
+
 
     // Handle back button press
     public void handleBackButton(View view) {
