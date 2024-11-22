@@ -29,8 +29,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 public class ReserveACourt extends AppCompatActivity {
@@ -185,7 +187,7 @@ public class ReserveACourt extends AppCompatActivity {
         for (String timeSlot : selectedTimeSlots) {
             message.append(timeSlot).append("\n");
         }
-        message.append("\nDo you want to confirm this reservation?");
+        message.append("\nDo you want to confirm this reservation on " + selectedDate + "?");
 
         // Show confirmation dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -231,12 +233,56 @@ public class ReserveACourt extends AppCompatActivity {
                         // Save the single reservation
                         mDatabase.child("reservations").push().setValue(reservation)
                                 .addOnSuccessListener(aVoid -> {
-                                    showSuccessMessage();  // Display success message upon successful save
+
+                                    if (user != null) {
+                                        String userId = user.getUid();
+                                        String courtName = getIntent().getStringExtra("courtName");
+                                        String recentReservation = selectedDate;
+
+                                        // Reference to the user in Firebase
+                                        DatabaseReference userRef = mDatabase.child("users").child(userId);
+
+                                        // Fetch current user data
+                                        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                if (dataSnapshot.exists()) {
+                                                    // Get current totalReservations
+                                                    long totalReservations = 0;
+                                                    if (dataSnapshot.hasChild("totalReservations")) {
+                                                        totalReservations = dataSnapshot.child("totalReservations").getValue(Long.class);
+                                                    }
+
+                                                    // Increment totalReservations and update recentReservation
+                                                    totalReservations++;
+
+                                                    // Prepare updates
+                                                    Map<String, Object> updates = new HashMap<>();
+                                                    updates.put("totalReservations", totalReservations);
+                                                    updates.put("recentReservation", recentReservation);
+
+                                                    // Save updates to Firebase
+                                                    userRef.updateChildren(updates)
+                                                            .addOnSuccessListener(unused -> {
+                                                                showSuccessMessage(); // Notify user of success
+                                                            })
+                                                            .addOnFailureListener(e -> {
+                                                                e.printStackTrace();
+                                                                Toast.makeText(ReserveACourt.this, "Failed to update user data", Toast.LENGTH_SHORT).show();
+                                                            });
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+                                                Toast.makeText(ReserveACourt.this, "Failed to fetch user data", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
                                 })
                                 .addOnFailureListener(e -> {
                                     e.printStackTrace();
-                                    Toast toast = Toast.makeText(ReserveACourt.this, "An error occurred while reserving the court", Toast.LENGTH_SHORT);
-                                    toast.show();
+                                    Toast.makeText(ReserveACourt.this, "An error occurred while reserving the court", Toast.LENGTH_SHORT).show();
                                 });
 
                     } else {

@@ -104,7 +104,7 @@ public class Home extends AppCompatActivity {
         user_uid = getIntent().getStringExtra("user_uid");
 
         getLatestReservation(user_uid, () -> {
-            if (!hasSeenFragment) {
+            if (!hasSeenFragment && recentReservation != null) {
                 showWelcomeFragment();
                 hasSeenFragment = true; // Set to true only for the current app session
             }
