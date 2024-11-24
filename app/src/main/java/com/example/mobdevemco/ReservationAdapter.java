@@ -36,7 +36,7 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
         final ReservationData reservationDataList = reservationData[position];
         holder.courtName.setText(reservationDataList.getCourtName());
         holder.reservationDate.setText("Date: " + reservationDataList.getReservationDate());
-        holder.reservationTime.setText("Time: " + reservationDataList.getReservationTime());
+        holder.reservationTime.setText("Time: " + reservationDataList.getReservationTimeSlot());
     }
 
     @Override
