@@ -8,6 +8,7 @@ public class User {
     public int totalReservations;
     public String recentReservation;
 
+
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
@@ -60,4 +61,5 @@ public class User {
     public void setTotalReservations(int totalReservations) {
         this.totalReservations = totalReservations;
     }
+
 }
