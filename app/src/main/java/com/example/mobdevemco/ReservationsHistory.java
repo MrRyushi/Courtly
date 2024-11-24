@@ -2,6 +2,7 @@ package com.example.mobdevemco;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,25 +17,23 @@ public class ReservationsHistory extends AppCompatActivity {
     private ReservationData[] reservationData;
     private ReservationAdapter reservationAdapter;
 
+    private TextView accountName;
+    private TextView memberSince;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
 
-//        reservationData = new ReservationData[]{
-//                new ReservationData(1,"Court Alpha", "2021-10-01", "10:00 AM to 11:00 AM"),
-//                new ReservationData(2,"Court Bravo", "2021-10-02", "11:00 AM to 12:00 PM"),
-//                new ReservationData(3,"Court Charlie", "2021-10-03", "12:00 PM to 01:00 PM"),
-//                new ReservationData(4,"Court Delta", "2021-10-04", "01:00 PM to 02:00 PM"),
-//                new ReservationData(5,"Court Echo", "2021-10-05", "02:00 PM to 03:00 PM"),
-//                new ReservationData(6,"Court Foxtrot", "2021-10-06", "03:00 PM to 04:00 PM"),
-//                new ReservationData(7,"Court Golf", "2021-10-07", "04:00 PM to 05:00 PM"),
-//                new ReservationData(8,"Court Hotel", "2021-10-08", "05:00 PM to 06:00 PM"),
-//        };
-
         if(reservationData == null) {
             setContentView(R.layout.activity_empty_reservations_history);
+            String fullNameIntent = getIntent().getStringExtra("fullName");
+            String memberSinceIntent = getIntent().getStringExtra("memberSince");
+
+            accountName = findViewById(R.id.accountName);
+            accountName.setText(fullNameIntent);
+            memberSince = findViewById(R.id.memberSince);
+            memberSince.setText(memberSinceIntent);
             return;
         }
         setContentView(R.layout.activity_reservations_history);
@@ -47,6 +46,14 @@ public class ReservationsHistory extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        String fullNameIntent = getIntent().getStringExtra("fullName");
+        String memberSinceIntent = getIntent().getStringExtra("memberSince");
+
+        accountName = findViewById(R.id.accountName);
+        accountName.setText(fullNameIntent);
+        memberSince = findViewById(R.id.memberSince);
+        memberSince.setText(memberSinceIntent);
 
         reservationAdapter = new ReservationAdapter(reservationData, ReservationsHistory.this);
         recyclerView.setAdapter(reservationAdapter);
