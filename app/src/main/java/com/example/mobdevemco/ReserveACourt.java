@@ -108,6 +108,9 @@ public class ReserveACourt extends AppCompatActivity {
             // Format the date to "day/month/year"
             selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
 
+            // Disable all time slots
+            resetForm();
+
             // Clear all time slots to reset availability
             enableAllTimeSlots();
 
@@ -349,6 +352,137 @@ public class ReserveACourt extends AppCompatActivity {
         });
     }
 
+
+    // Method to enable all timeslots
+    private void enableAllTimeSlots() {
+        time6amTo7am.setEnabled(true);
+        time7amTo8am.setEnabled(true);
+        time8amTo9am.setEnabled(true);
+        time9amTo10am.setEnabled(true);
+        time10amTo11am.setEnabled(true);
+        time11amTo12pm.setEnabled(true);
+        time12pmTo1pm.setEnabled(true);
+        time1pmTo2pm.setEnabled(true);
+        time2pmTo3pm.setEnabled(true);
+        time3pmTo4pm.setEnabled(true);
+        time4pmTo5pm.setEnabled(true);
+        time5pmTo6pm.setEnabled(true);
+        time6pmTo7pm.setEnabled(true);
+        time7pmTo8pm.setEnabled(true);
+    }
+
+    private void resetForm() {
+        time6amTo7am.setChecked(false);
+        time7amTo8am.setChecked(false);
+        time8amTo9am.setChecked(false);
+        time9amTo10am.setChecked(false);
+        time10amTo11am.setChecked(false);
+        time11amTo12pm.setChecked(false);
+        time12pmTo1pm.setChecked(false);
+        time1pmTo2pm.setChecked(false);
+        time2pmTo3pm.setChecked(false);
+        time3pmTo4pm.setChecked(false);
+        time4pmTo5pm.setChecked(false);
+        time5pmTo6pm.setChecked(false);
+        time6pmTo7pm.setChecked(false);
+        time7pmTo8pm.setChecked(false);
+    }
+
+    private void prefillTimeSlots() {
+        String courtName = getIntent().getStringExtra("courtName");
+        String timeSlotsString = getIntent().getStringExtra("timeSlots");
+
+        if (timeSlotsString == null) {
+            return;
+        }
+
+        final List<String> selectedTimeSlots = new ArrayList<>(Arrays.asList(timeSlotsString.split(",")));
+
+        mDatabase.child("reservations").orderByChild("courtName").equalTo(courtName)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        List<String> reservedTimeSlots = new ArrayList<>();
+
+                        for (DataSnapshot reservationSnapshot : snapshot.getChildren()) {
+                            Reservations reservation = reservationSnapshot.getValue(Reservations.class);
+
+                            if (reservation != null && selectedDate.equals(reservation.getDate())) {
+                                reservedTimeSlots.addAll(reservation.getTimeSlots());
+                            }
+                        }
+
+                        List<String> overlappingTimeSlots = new ArrayList<>(selectedTimeSlots);
+                        overlappingTimeSlots.retainAll(reservedTimeSlots);
+
+                        if (!overlappingTimeSlots.isEmpty()) {
+                            String message = "The following timeslots are already reserved: " + overlappingTimeSlots.toString();
+                            Toast.makeText(ReserveACourt.this, message, Toast.LENGTH_LONG).show();
+                        }
+
+                        disableReservedTimeSlots(reservedTimeSlots);
+                        prefillSelectedTimeSlots(selectedTimeSlots, reservedTimeSlots);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(ReserveACourt.this, "Failed to fetch reservations for prefilling", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void prefillSelectedTimeSlots(List<String> selectedTimeSlots, List<String> reservedTimeSlots) {
+        for (String timeSlot : selectedTimeSlots) {
+            if (!reservedTimeSlots.contains(timeSlot)) {
+                switch (timeSlot) {
+                    case "6:00 AM - 7:00 AM":
+                        time6amTo7am.setChecked(true);
+                        break;
+                    case "7:00 AM - 8:00 AM":
+                        time7amTo8am.setChecked(true);
+                        break;
+                    case "8:00 AM - 9:00 AM":
+                        time8amTo9am.setChecked(true);
+                        break;
+                    case "9:00 AM - 10:00 AM":
+                        time9amTo10am.setChecked(true);
+                        break;
+                    case "10:00 AM - 11:00 AM":
+                        time10amTo11am.setChecked(true);
+                        break;
+                    case "11:00 AM - 12:00 PM":
+                        time11amTo12pm.setChecked(true);
+                        break;
+                    case "12:00 PM - 1:00 PM":
+                        time12pmTo1pm.setChecked(true);
+                        break;
+                    case "1:00 PM - 2:00 PM":
+                        time1pmTo2pm.setChecked(true);
+                        break;
+                    case "2:00 PM - 3:00 PM":
+                        time2pmTo3pm.setChecked(true);
+                        break;
+                    case "3:00 PM - 4:00 PM":
+                        time3pmTo4pm.setChecked(true);
+                        break;
+                    case "4:00 PM - 5:00 PM":
+                        time4pmTo5pm.setChecked(true);
+                        break;
+                    case "5:00 PM - 6:00 PM":
+                        time5pmTo6pm.setChecked(true);
+                        break;
+                    case "6:00 PM - 7:00 PM":
+                        time6pmTo7pm.setChecked(true);
+                        break;
+                    case "7:00 PM - 8:00 PM":
+                        time7pmTo8pm.setChecked(true);
+                        break;
+                }
+            }
+        }
+    }
+
+
     // Method to disable timeslots based on reserved time slots
     private void disableReservedTimeSlots(List<String> reservedTimeSlots) {
         // Notify the user of reserved time slots
@@ -400,149 +534,6 @@ public class ReserveACourt extends AppCompatActivity {
                     time7pmTo8pm.setEnabled(false);
                     break;
             }
-        }
-    }
-
-
-    // Method to enable all timeslots
-    private void enableAllTimeSlots() {
-        time6amTo7am.setEnabled(true);
-        time7amTo8am.setEnabled(true);
-        time8amTo9am.setEnabled(true);
-        time9amTo10am.setEnabled(true);
-        time10amTo11am.setEnabled(true);
-        time11amTo12pm.setEnabled(true);
-        time12pmTo1pm.setEnabled(true);
-        time1pmTo2pm.setEnabled(true);
-        time2pmTo3pm.setEnabled(true);
-        time3pmTo4pm.setEnabled(true);
-        time4pmTo5pm.setEnabled(true);
-        time5pmTo6pm.setEnabled(true);
-        time6pmTo7pm.setEnabled(true);
-        time7pmTo8pm.setEnabled(true);
-    }
-
-    private void resetForm() {
-        time6amTo7am.setChecked(false);
-        time7amTo8am.setChecked(false);
-        time8amTo9am.setChecked(false);
-        time9amTo10am.setChecked(false);
-        time10amTo11am.setChecked(false);
-        time11amTo12pm.setChecked(false);
-        time12pmTo1pm.setChecked(false);
-        time1pmTo2pm.setChecked(false);
-        time2pmTo3pm.setChecked(false);
-        time3pmTo4pm.setChecked(false);
-        time4pmTo5pm.setChecked(false);
-        time5pmTo6pm.setChecked(false);
-        time6pmTo7pm.setChecked(false);
-        time7pmTo8pm.setChecked(false);
-    }
-
-    private void prefillTimeSlots() {
-        // Get the court name from the intent
-        String courtName = getIntent().getStringExtra("courtName");
-
-        String timeSlotsString = getIntent().getStringExtra("timeSlots");
-
-        if(timeSlotsString == null) {
-            return;
-        }
-        // Split the string into a List<String> based on the comma separator
-        final List<String> selectedTimeSlots = new ArrayList<>(Arrays.asList(timeSlotsString.split(",")));
-
-
-        System.out.println("Selected time slots: " + selectedTimeSlots);
-
-        // Query Firebase for reservations on the selected date and court
-        mDatabase.child("reservations").orderByChild("courtName").equalTo(courtName)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        // List to store reserved time slots
-                        List<String> reservedTimeSlots = new ArrayList<>();
-
-                        // Iterate through reservations
-                        for (DataSnapshot reservationSnapshot : snapshot.getChildren()) {
-                            Reservations reservation = reservationSnapshot.getValue(Reservations.class);
-
-                            // Ensure the reservation matches the selected date
-                            if (reservation != null && selectedDate.equals(reservation.getDate())) {
-                                reservedTimeSlots.addAll(reservation.getTimeSlots());
-                            }
-                        }
-
-                        // Check if the selected timeslots are already reserved
-                        List<String> overlappingTimeSlots = new ArrayList<>(selectedTimeSlots);
-                        overlappingTimeSlots.retainAll(reservedTimeSlots);  // Find intersection
-
-                        // If there are any overlapping timeslots, show a toast
-                        if (!overlappingTimeSlots.isEmpty()) {
-                            String message = "The following timeslots are already reserved: " + overlappingTimeSlots.toString();
-                            Toast.makeText(ReserveACourt.this, message, Toast.LENGTH_LONG).show();
-                        }
-
-                        // Disable already reserved time slots
-                        disableReservedTimeSlots(reservedTimeSlots);
-
-                        // Prefill time slots for the rest of the checkboxes
-                        enableRemainingTimeSlots(reservedTimeSlots);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(ReserveACourt.this, "Failed to fetch reservations for prefilling", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
-
-
-
-    // Helper to enable remaining time slots that are not reserved
-    private void enableRemainingTimeSlots(List<String> reservedTimeSlots) {
-        // Iterate over all time slots and enable them if not reserved
-        if (!reservedTimeSlots.contains("6:00 AM - 7:00 AM")) {
-            time6amTo7am.setEnabled(true);
-        }
-        if (!reservedTimeSlots.contains("7:00 AM - 8:00 AM")) {
-            time7amTo8am.setEnabled(true);
-        }
-        if (!reservedTimeSlots.contains("8:00 AM - 9:00 AM")) {
-            time8amTo9am.setEnabled(true);
-        }
-        if (!reservedTimeSlots.contains("9:00 AM - 10:00 AM")) {
-            time9amTo10am.setEnabled(true);
-        }
-        if (!reservedTimeSlots.contains("10:00 AM - 11:00 AM")) {
-            time10amTo11am.setEnabled(true);
-        }
-        if (!reservedTimeSlots.contains("11:00 AM - 12:00 PM")) {
-            time11amTo12pm.setEnabled(true);
-        }
-        if (!reservedTimeSlots.contains("12:00 PM - 1:00 PM")) {
-            time12pmTo1pm.setEnabled(true);
-        }
-        if (!reservedTimeSlots.contains("1:00 PM - 2:00 PM")) {
-            time1pmTo2pm.setEnabled(true);
-        }
-        if (!reservedTimeSlots.contains("2:00 PM - 3:00 PM")) {
-            time2pmTo3pm.setEnabled(true);
-        }
-        if (!reservedTimeSlots.contains("3:00 PM - 4:00 PM")) {
-            time3pmTo4pm.setEnabled(true);
-        }
-        if (!reservedTimeSlots.contains("4:00 PM - 5:00 PM")) {
-            time4pmTo5pm.setEnabled(true);
-        }
-        if (!reservedTimeSlots.contains("5:00 PM - 6:00 PM")) {
-            time5pmTo6pm.setEnabled(true);
-        }
-        if (!reservedTimeSlots.contains("6:00 PM - 7:00 PM")) {
-            time6pmTo7pm.setEnabled(true);
-        }
-        if (!reservedTimeSlots.contains("7:00 PM - 8:00 PM")) {
-            time7pmTo8pm.setEnabled(true);
         }
     }
 
