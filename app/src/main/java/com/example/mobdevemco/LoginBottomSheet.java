@@ -21,8 +21,6 @@ public class LoginBottomSheet extends BottomSheetDialogFragment {
     Button loginBtn;
     EditText editTextEmail, editTextPassword;
 
-
-
     public interface OnLoginListener {
         void onLogin(String email, String password);
     }
@@ -50,8 +48,6 @@ public class LoginBottomSheet extends BottomSheetDialogFragment {
             throw new RuntimeException(context.toString() + " must implement both OnLoginListener and OnResetPasswordListener");
         }
     }
-
-
 
     @Nullable
     @Override
@@ -107,6 +103,8 @@ public class LoginBottomSheet extends BottomSheetDialogFragment {
             Toast.makeText(getContext(), "Please fill all the fields", Toast.LENGTH_SHORT).show();
             return;
         }
+
+
 
         // Pass data back to MainActivity via listener
         listener.onLogin(email, password);
