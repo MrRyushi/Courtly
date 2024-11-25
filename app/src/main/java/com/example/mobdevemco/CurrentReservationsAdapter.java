@@ -13,8 +13,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 import java.util.Objects;
@@ -78,12 +81,36 @@ public class CurrentReservationsAdapter extends RecyclerView.Adapter<CurrentRese
             if (Objects.equals(reservationDataList.get(i).getId(), reservationId)) {
                 // Remove from Firebase
                 DatabaseReference reservationRef = FirebaseDatabase.getInstance().getReference("reservations").child(reservationId);
+                DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(reservationDataList.get(i).getUserId());
+
                 int finalI = i;
                 reservationRef.removeValue().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // Now remove from local list and notify adapter
-                        reservationDataList.remove(finalI);
-                        notifyItemRemoved(finalI); // Notify RecyclerView about the item removed
+                        // Fetch totalReservations, decrement by 1, and update
+                        userRef.child("totalReservations").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                Integer totalReservations = snapshot.getValue(Integer.class);
+                                if (totalReservations != null && totalReservations > 0) {
+                                    // Decrement totalReservations by 1
+                                    userRef.child("totalReservations").setValue(totalReservations - 1)
+                                            .addOnCompleteListener(updateTask -> {
+                                                if (updateTask.isSuccessful()) {
+                                                    // Remove from local list and notify adapter
+                                                    reservationDataList.remove(finalI);
+                                                    notifyItemRemoved(finalI);
+                                                } else {
+                                                    Toast.makeText(context, "Error updating total reservations.", Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(context, "Error fetching total reservations.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     } else {
                         Toast.makeText(context, "Error removing reservation.", Toast.LENGTH_SHORT).show();
                     }
