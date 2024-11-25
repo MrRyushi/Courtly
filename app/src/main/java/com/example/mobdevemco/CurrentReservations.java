@@ -27,16 +27,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class CurrentReservations extends AppCompatActivity {
     private List<ReservationData> currentReservationData = new ArrayList<>();
     private CurrentReservationsAdapter reservationAdapter;
     private ActivityResultLauncher<Intent> myActivityResultLauncher;
     private DatabaseReference mDatabase;
-
     String user_uid;
 
     private TextView accountName;
@@ -49,7 +51,6 @@ public class CurrentReservations extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
 
-        // Set layout based on whether the reservations list is empty
         setContentView(R.layout.activity_current_reservations);
 
         user_uid = getIntent().getStringExtra("user_uid");
@@ -67,7 +68,6 @@ public class CurrentReservations extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
 
         // Register an activity result launcher
         myActivityResultLauncher = registerForActivityResult(
@@ -184,32 +184,51 @@ public class CurrentReservations extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 currentReservationData.clear();
+                SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy h:mm a", Locale.getDefault());
+                Date now = new Date(); // Current date and time
+
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    // Extract general reservation fields
-                    String id = snapshot.getKey(); // Firebase unique key
-                    String courtName = snapshot.child("courtName").getValue(String.class);
-                    String reservationDate = snapshot.child("date").getValue(String.class);
-                    String reservationDateTime = snapshot.child("reservationDateTime").getValue(String.class);
+                    try {
+                        // Extract general reservation fields
+                        String id = snapshot.getKey(); // Firebase unique key
+                        String courtName = snapshot.child("courtName").getValue(String.class);
+                        String reservationDate = snapshot.child("date").getValue(String.class); // Format: dd/MM/yyyy
+                        String reservationDateTime = snapshot.child("reservationDateTime").getValue(String.class);
 
-                    // Extract nested time slot field
-                    List<String> reservationTimeSlots = new ArrayList<>();
-                    for (DataSnapshot timeSlotSnapshot : snapshot.child("timeSlots").getChildren()) {
-                        String timeSlot = timeSlotSnapshot.getValue(String.class);
-                        reservationTimeSlots.add(timeSlot);
+                        // Extract and filter time slots
+                        List<String> upcomingTimeSlots = new ArrayList<>();
+                        for (DataSnapshot timeSlotSnapshot : snapshot.child("timeSlots").getChildren()) {
+                            String timeSlot = timeSlotSnapshot.getValue(String.class); // Format: h:mm - h:mm a
+                            if (timeSlot != null && reservationDate != null) {
+                                // Extract the start time from the time slot
+                                String[] timeRange = timeSlot.split(" - ");
+                                if (timeRange.length > 0) {
+                                    String startDateTime = reservationDate + " " + timeRange[0];
+                                    Date slotStartDate = dateFormatter.parse(startDateTime);
+
+                                    if (slotStartDate != null && !slotStartDate.before(now)) {
+                                        // Only add future time slots
+                                        upcomingTimeSlots.add(timeSlot);
+                                    }
+                                }
+                            }
+                        }
+
+                        // Only add reservation if it has at least one upcoming time slot
+                        if (!upcomingTimeSlots.isEmpty()) {
+                            ReservationData reservation = new ReservationData(
+                                    id,
+                                    courtName,
+                                    reservationDate,
+                                    reservationDateTime,
+                                    upcomingTimeSlots,
+                                    userId
+                            );
+                            currentReservationData.add(reservation);
+                        }
+                    } catch (Exception e) {
+                        Log.e("CurrentReservations", "Error parsing reservation data: " + e.getMessage());
                     }
-
-                    // Construct a ReservationData object
-                    ReservationData reservation = new ReservationData(
-                            id,
-                            courtName,
-                            reservationDate,
-                            reservationDateTime,
-                            reservationTimeSlots,
-                            userId
-                    );
-
-                    // Add reservation to the list
-                    currentReservationData.add(reservation);
                 }
 
                 // Notify adapter of data change
@@ -230,6 +249,7 @@ public class CurrentReservations extends AppCompatActivity {
         });
     }
 
+
     public void handleBackButtonClick(View view) {
         finish();
     }
@@ -238,6 +258,7 @@ public class CurrentReservations extends AppCompatActivity {
         Intent intent = new Intent(CurrentReservations.this, ReservationsHistory.class);
         intent.putExtra("fullName", accountName.getText().toString());
         intent.putExtra("memberSince", memberSince.getText().toString());
+        intent.putExtra("user_uid", user_uid);
         myActivityResultLauncher.launch(intent);
     }
 }
