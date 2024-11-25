@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -123,7 +124,9 @@ public class Home extends AppCompatActivity {
             Bundle args = new Bundle();
             args.putString("reservationDate", date);
             args.putString("courtName", courtName);
-            args.putString("timeSlots", timeSlots.toString());
+
+            // Convert List<String> to a comma-separated string
+            args.putString("timeSlots", TextUtils.join(",", timeSlots));
 
             fragment.setArguments(args);
         } else {
