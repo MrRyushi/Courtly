@@ -3,18 +3,23 @@ package com.example.mobdevemco;
 public class User {
     public String fullName;
     public String email;
-    public boolean isMember;
+    public boolean member;
     public String membershipStatus;
+    public int totalReservations;
+    public String recentReservation;
+
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String username, String email, boolean isMember, String membershipStatus) {
+    public User(String username, String email, boolean member, String membershipStatus, int totalReservations, String recentReservation) {
         this.fullName = username;
         this.email = email;
-        this.isMember = isMember;
+        this.member = member;
         this.membershipStatus = membershipStatus;
+        this.totalReservations = totalReservations;
+        this.recentReservation = recentReservation;
     }
 
     public String getFullName() {
@@ -33,12 +38,12 @@ public class User {
         this.email = email;
     }
 
-    public boolean isMember() {
-        return isMember;
+    public boolean member() {
+        return member;
     }
 
     public void setMember(boolean member) {
-        this.isMember = member;
+        this.member = member;
     }
 
     public String getMembershipStatus() {
@@ -48,4 +53,13 @@ public class User {
     public void setMembershipStatus(String membershipStatus) {
         this.membershipStatus = membershipStatus;
     }
+
+    public int getTotalReservations() {
+        return totalReservations;
+    }
+
+    public void setTotalReservations(int totalReservations) {
+        this.totalReservations = totalReservations;
+    }
+
 }

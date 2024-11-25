@@ -32,22 +32,21 @@
 
             <TextView
                 android:id="@+id/accountName"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_bold"
-                android:text="Account Name!"
                 android:textColor="#F2E8C6"
                 android:textSize="32dp" />
 
             <TextView
                 android:id="@+id/memberSince"
-                android:layout_width="276dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_border"
                 android:fontFamily="@font/poppins_light"
                 android:paddingVertical="4dp"
                 android:paddingStart="12dp"
-                android:text="Member Since: January 14, 2024"
+                android:paddingEnd="12dp"
                 android:textColor="#F2E8C6"
                 android:textSize="16dp" />
 

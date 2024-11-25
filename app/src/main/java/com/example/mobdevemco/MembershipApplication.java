@@ -16,6 +16,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class MembershipApplication extends AppCompatActivity {
 
     private DatabaseReference mDatabase;
@@ -68,6 +71,9 @@ public class MembershipApplication extends AppCompatActivity {
         // Reference to the user's data in Firebase
         DatabaseReference userRef = mDatabase.child("users").child(userId);
 
+        // Get the current date in the format dd/MM/yyyy
+        String currentDate = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+
         // Update the user's membership status
         userRef.child("membershipStatus").setValue(status)
                 .addOnCompleteListener(task -> {
@@ -77,6 +83,18 @@ public class MembershipApplication extends AppCompatActivity {
                     } else {
                         // Handle failure to update the status
                         Log.e("MembershipApplication", "Failed to update membership status");
+                    }
+                });
+
+        // Update the user's dateRequested
+        userRef.child("dateRequested").setValue(currentDate)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Successfully updated dateRequested
+                        Log.d("MembershipApplication", "Date requested updated to: " + currentDate);
+                    } else {
+                        // Handle failure to update the date
+                        Log.e("MembershipApplication", "Failed to update date requested");
                     }
                 });
     }

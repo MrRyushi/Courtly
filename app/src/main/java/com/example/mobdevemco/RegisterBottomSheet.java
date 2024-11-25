@@ -99,9 +99,27 @@ public class RegisterBottomSheet extends BottomSheetDialogFragment {
             return;
         }
 
+        fullName = capitalizeFullName(fullName);
+
         // Pass data back to MainActivity via listener
         listener.onRegister(fullName, email, password);
         progressBar.setVisibility(View.GONE);
     }
+    private String capitalizeFullName(String fullName) {
+        String[] words = fullName.split("\\s+"); // Split by spaces
+        StringBuilder capitalizedFullName = new StringBuilder();
+
+        for (String word : words) {
+            if (word.length() > 0) {
+                capitalizedFullName.append(word.substring(0, 1).toUpperCase()) // Capitalize first letter
+                        .append(word.substring(1).toLowerCase()) // Make the rest lowercase
+                        .append(" "); // Add space after each word
+            }
+        }
+
+        // Remove the trailing space
+        return capitalizedFullName.toString().trim();
+    }
 
 }
+

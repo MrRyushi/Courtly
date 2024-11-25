@@ -31,6 +31,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity implements RegisterBottomSheet.OnRegisterListener, LoginBottomSheet.OnLoginListener, LoginBottomSheet.OnResetPasswordListener {
 
     Button loginBtn;
@@ -138,7 +142,8 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
 
 
     public void writeNewUser(String userId, String name, String email) {
-        User user = new User(name, email, false, "No application");
+
+        User user = new User(name, email, false, "No application", 0, "No reservations");
 
         mDatabase.child("users").child(userId).setValue(user);
     }
