@@ -49,8 +49,8 @@ public class ReservationData {
         this.reservationDate = reservationDate;
     }
 
-    public String getReservationTimeSlot() {
-        return reservationTimeSlot.toString().replace("[", "").replace("]", "");
+    public List<String> getReservationTimeSlot() {
+        return reservationTimeSlot; // Return the list of time slots directly
     }
 
     public void setReservationTimeSlot(String reservationTimeSlot) {

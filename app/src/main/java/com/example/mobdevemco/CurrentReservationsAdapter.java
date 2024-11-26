@@ -3,6 +3,7 @@ package com.example.mobdevemco;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +45,8 @@ public class CurrentReservationsAdapter extends RecyclerView.Adapter<CurrentRese
         final ReservationData reservationData = reservationDataList.get(position);
         holder.courtName.setText(reservationData.getCourtName());
         holder.reservationDate.setText("Date: " + reservationData.getReservationDate());
-        holder.reservationTime.setText("Time: " + reservationData.getReservationTimeSlot());
+        String timeSlot = TextUtils.join(", ", reservationData.getReservationTimeSlot());
+        holder.reservationTime.setText("Time: " + timeSlot);
 
         holder.cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override

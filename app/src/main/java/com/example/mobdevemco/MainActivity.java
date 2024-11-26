@@ -11,17 +11,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -31,10 +25,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 public class MainActivity extends AppCompatActivity implements RegisterBottomSheet.OnRegisterListener, LoginBottomSheet.OnLoginListener, LoginBottomSheet.OnResetPasswordListener {
 
     Button loginBtn;
@@ -42,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
     ImageView landingImg;
     FirebaseAuth mAuth;
     DatabaseReference mDatabase;
-    String user_uid;
+    SPHelper spHelper;
 
     @Override
     public void onRegister(String fullName, String email, String password) {
@@ -65,16 +55,25 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
         EdgeToEdge.enable(this);
         setContentView(R.layout.landing_ui);
 
+        // Initialize SPHelper
+        spHelper = new SPHelper(this);
+
+        // Check if user is already logged in
+        if (spHelper.isLoggedIn()) {
+            // Navigate to the Home activity if logged in
+            navigateToHome(spHelper.getUserUID());
+            return;
+        }
+
+        // Setup UI elements
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        // auth instance
+        // Firebase auth and database
         mAuth = FirebaseAuth.getInstance();
-
-        // database reference
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         loginBtn = findViewById(R.id.loginBtn);
@@ -84,15 +83,14 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
         loginBtn.setOnClickListener(this::loginBtnOnClick);
         registerBtn.setOnClickListener(this::registerBtnOnClick);
         landingImg.setImageResource(R.drawable.landing_bg);
-
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
+        // Check if user is signed in (non-null) and reload.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
+        if (currentUser != null) {
             currentUser.reload();
         }
     }
@@ -101,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
         // Start the LoginBottomSheet
         openLoginBottomSheet();
     }
+
     void registerBtnOnClick(View v) {
         // Start the RegisterBottomSheet
         RegisterBottomSheet bottomSheet = new RegisterBottomSheet();
@@ -111,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
         LoginBottomSheet bottomSheet = new LoginBottomSheet();
         bottomSheet.show(getSupportFragmentManager(), LoginBottomSheet.class.getSimpleName());
     }
+
     void handleRegister(String email, String password, String fullName) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -122,17 +122,14 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
                             writeNewUser(user.getUid(), fullName, email);
                             Toast.makeText(MainActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
 
-                            // Notify the RegisterBottomSheet to close
                             RegisterBottomSheet registerBottomSheet = (RegisterBottomSheet)
                                     getSupportFragmentManager().findFragmentByTag(RegisterBottomSheet.class.getSimpleName());
                             if (registerBottomSheet != null) {
                                 registerBottomSheet.dismiss();
                             }
 
-                            // Open the LoginBottomSheet
                             openLoginBottomSheet();
                         } else {
-                            // Registration failed, display a message
                             Toast.makeText(MainActivity.this, "Registration failed: " + task.getException().getMessage(),
                                     Toast.LENGTH_SHORT).show();
                         }
@@ -140,11 +137,8 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
                 });
     }
 
-
     public void writeNewUser(String userId, String name, String email) {
-
         User user = new User(name, email, false, "No application", 0, "No reservations");
-
         mDatabase.child("users").child(userId).setValue(user);
     }
 
@@ -156,30 +150,25 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
                             Toast.makeText(MainActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-                            user_uid = user.getUid();
 
-                            // Navigate to the Home activity
-                            Intent i = new Intent(MainActivity.this, Home.class);
-                            i.putExtra("user_uid", user_uid);
-                            startActivity(i);
+                            // Save session to shared preferences
+                            spHelper.saveUserSession(user.getUid(), user.getEmail());
 
-                            // Notify the bottom sheet to dismiss (if it is still visible)
+                            // Navigate to Home
+                            navigateToHome(user.getUid());
+
                             LoginBottomSheet bottomSheet = (LoginBottomSheet)
                                     getSupportFragmentManager().findFragmentByTag(LoginBottomSheet.class.getSimpleName());
                             if (bottomSheet != null) {
                                 bottomSheet.dismissOnSuccess();
                             }
                         } else {
-                            // Notify the user about the failure
                             Toast.makeText(MainActivity.this, "Login failed: Email or password is incorrect",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
     }
-
-
-
 
     void handleResetPassword(String email) {
         mAuth.sendPasswordResetEmail(email)
@@ -195,5 +184,12 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
                         }
                     }
                 });
+    }
+
+    void navigateToHome(String userUID) {
+        Intent intent = new Intent(MainActivity.this, Home.class);
+        intent.putExtra("user_uid", userUID);
+        startActivity(intent);
+        finish();
     }
 }

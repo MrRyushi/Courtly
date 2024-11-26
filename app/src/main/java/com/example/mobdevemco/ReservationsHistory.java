@@ -140,6 +140,21 @@ public class ReservationsHistory extends AppCompatActivity {
                     }
                 }
 
+                reservationData.sort((r1, r2) -> {
+                    try {
+                        Date date1 = dateFormatter.parse(r1.getReservationDate() + " " + r1.getReservationTimeSlot().get(0).split(" - ")[0]);
+                        Date date2 = dateFormatter.parse(r2.getReservationDate() + " " + r2.getReservationTimeSlot().get(0).split(" - ")[0]);
+
+                        if (date1 == null) return 1; // Push null `date1` to the end
+                        if (date2 == null) return -1; // Push null `date2` to the end
+
+                        return date2.compareTo(date1);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        return 0; // Keep original order if parsing fails
+                    }
+                });
+
                 // Notify adapter of data change
                 reservationAdapter.notifyDataSetChanged();
                 Log.d("ReservationsHistory", "Number of Reservations: " + reservationData.size());
