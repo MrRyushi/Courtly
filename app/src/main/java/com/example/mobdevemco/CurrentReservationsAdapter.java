@@ -59,7 +59,16 @@ public class CurrentReservationsAdapter extends RecyclerView.Adapter<CurrentRese
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // Call the remove method if user confirms
-                                removeItemById(reservationData.getId());
+                                if (NetworkUtils.isInternetAvailable(context)) {
+                                    removeItemById(reservationData.getId());
+                                }
+                                else {
+                                    new AlertDialog.Builder(context)
+                                            .setTitle("No Internet Connection")
+                                            .setMessage("Please check your internet connection and try again.")
+                                            .setPositiveButton("OK", null)
+                                            .show();
+                                }
                             }
                         })
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
