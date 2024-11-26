@@ -64,4 +64,12 @@ public class ReservationData {
     public void setUserId(String userId) {
         this.userId = userId;
     }
+
+    public String getReservationDateTime() {
+        return reservationDateTime;
+    }
+
+    public void setReservationDateTime(String reservationDateTime) {
+        this.reservationDateTime = reservationDateTime;
+    }
 }

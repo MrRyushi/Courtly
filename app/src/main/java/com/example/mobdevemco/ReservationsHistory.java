@@ -1,5 +1,10 @@
 package com.example.mobdevemco;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -29,7 +34,7 @@ import java.util.Locale;
 
 public class ReservationsHistory extends AppCompatActivity {
 
-    private List<ReservationData> reservationData = new ArrayList<>();; // Change to List
+    private List<ReservationData> reservationData = new ArrayList<>();
     private ReservationAdapter reservationAdapter;
 
     private TextView accountName;
@@ -45,7 +50,7 @@ public class ReservationsHistory extends AppCompatActivity {
         user_uid = getIntent().getStringExtra("user_uid");
         mDatabase = FirebaseDatabase.getInstance().getReference("reservations");
 
-        if(reservationData == null) {
+        if (reservationData == null) {
             setContentView(R.layout.activity_empty_reservations_history);
             String fullNameIntent = getIntent().getStringExtra("fullName");
             String memberSinceIntent = getIntent().getStringExtra("memberSince");
@@ -81,83 +86,24 @@ public class ReservationsHistory extends AppCompatActivity {
         recyclerView.setAdapter(reservationAdapter);
 
         // Fetch reservations for the current user
-        fetchReservations(user_uid);
+        if (isConnectedToInternet()) {
+            fetchReservationsFromFirebase(user_uid);
+        } else {
+            fetchReservationsFromSQLite(user_uid);
+        }
     }
 
-    private void fetchReservations(String userId) {
+    private boolean isConnectedToInternet() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnected();
+    }
+
+    private void fetchReservationsFromFirebase(String userId) {
         mDatabase.orderByChild("userId").equalTo(userId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                reservationData.clear(); // Clear any existing data
-                SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy h:mm a", Locale.getDefault());
-                Date now = new Date(); // Current date and time
-
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    try {
-                        String id = snapshot.getKey();
-                        String courtName = snapshot.child("courtName").getValue(String.class);
-                        String reservationDate = snapshot.child("date").getValue(String.class); // Format: dd/MM/yyyy
-                        String reservationDateTime = snapshot.child("reservationDateTime").getValue(String.class);
-                        List<String> reservationTimeSlots = new ArrayList<>();
-                        boolean isReservationPast = false;
-
-                        for (DataSnapshot timeSlotSnapshot : snapshot.child("timeSlots").getChildren()) {
-                            String timeSlot = timeSlotSnapshot.getValue(String.class); // Format: h:mm - h:mm a
-                            if (timeSlot != null && reservationDate != null) {
-                                // Extract the start time from the time slot
-                                String[] timeRange = timeSlot.split(" - ");
-                                if (timeRange.length > 0) {
-                                    // Combine date and start time
-                                    String startDateTime = reservationDate + " " + timeRange[0]; // e.g., "24/11/2024 1:00 PM"
-                                    Date slotStartDate = dateFormatter.parse(startDateTime);
-
-                                    if (slotStartDate != null) {
-                                        if (slotStartDate.before(now)) {
-                                            isReservationPast = true; // Mark as past reservation
-                                            reservationTimeSlots.add(timeSlot);
-                                        }
-                                    } else {
-                                        Log.e("ReservationsHistory", "Parsed date is null for: " + startDateTime);
-                                    }
-                                }
-                            }
-                        }
-
-                        // Add the reservation to the list if any time slot is in the past
-                        if (isReservationPast) {
-                            ReservationData reservation = new ReservationData(
-                                    id,
-                                    courtName,
-                                    reservationDate,
-                                    reservationDateTime,
-                                    reservationTimeSlots,
-                                    userId
-                            );
-                            reservationData.add(reservation);
-                        }
-                    } catch (ParseException e) {
-                        Log.e("ReservationsHistory", "Date Parsing Error: " + e.getMessage());
-                    }
-                }
-
-                reservationData.sort((r1, r2) -> {
-                    try {
-                        Date date1 = dateFormatter.parse(r1.getReservationDate() + " " + r1.getReservationTimeSlot().get(0).split(" - ")[0]);
-                        Date date2 = dateFormatter.parse(r2.getReservationDate() + " " + r2.getReservationTimeSlot().get(0).split(" - ")[0]);
-
-                        if (date1 == null) return 1; // Push null `date1` to the end
-                        if (date2 == null) return -1; // Push null `date2` to the end
-
-                        return date2.compareTo(date1);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                        return 0; // Keep original order if parsing fails
-                    }
-                });
-
-                // Notify adapter of data change
-                reservationAdapter.notifyDataSetChanged();
-                Log.d("ReservationsHistory", "Number of Reservations: " + reservationData.size());
+                populateReservations(dataSnapshot, true);
             }
 
             @Override
@@ -167,6 +113,112 @@ public class ReservationsHistory extends AppCompatActivity {
         });
     }
 
+    private void fetchReservationsFromSQLite(String userId) {
+        reservationData.clear();
+
+        SQLiteHelper dbHelper = new SQLiteHelper(getApplicationContext());  // Use SQLiteHelper to manage DB
+        Cursor cursor = dbHelper.getReservationsByUserId(userId);  // Fetch reservations for the user
+
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy h:mm a", Locale.getDefault());
+        Date now = new Date();
+
+        while (cursor.moveToNext()) {
+            try {
+                String id = cursor.getString(cursor.getColumnIndexOrThrow("id"));
+                String courtName = cursor.getString(cursor.getColumnIndexOrThrow("courtName"));
+                String reservationDate = cursor.getString(cursor.getColumnIndexOrThrow("date"));
+                String reservationDateTime = cursor.getString(cursor.getColumnIndexOrThrow("reservationDateTime"));
+                String timeSlotsString = cursor.getString(cursor.getColumnIndexOrThrow("timeSlots"));
+
+                // Split multiple time slots
+                String[] timeSlotsArray = timeSlotsString != null ? timeSlotsString.split(",") : new String[0];
+                List<String> reservationTimeSlots = new ArrayList<>();
+                boolean isReservationPast = false;
+
+                for (String timeSlot : timeSlotsArray) {
+                    timeSlot = timeSlot.trim();
+                    String startDateTime = reservationDate + " " + timeSlot.split(" - ")[0];
+                    Date slotStartDate = dateFormatter.parse(startDateTime);
+
+                    if (slotStartDate != null && slotStartDate.before(now)) {
+                        isReservationPast = true;
+                        reservationTimeSlots.add(timeSlot);
+                    }
+                }
+
+                // Add to list if at least one time slot is in the past
+                if (isReservationPast) {
+                    ReservationData reservation = new ReservationData(
+                            id,
+                            courtName,
+                            reservationDate,
+                            reservationDateTime,
+                            reservationTimeSlots,
+                            userId
+                    );
+                    reservationData.add(reservation);
+                }
+            } catch (ParseException e) {
+                Log.e("ReservationsHistory", "Date Parsing Error: " + e.getMessage());
+            }
+        }
+
+        cursor.close();  // Close cursor when done
+        dbHelper.close();  // Close the database helper
+
+        reservationAdapter.notifyDataSetChanged();  // Notify the adapter about data changes
+        Log.d("ReservationsHistory", "Loaded from SQLite. Number of Reservations: " + reservationData.size());
+    }
+
+
+
+    private void populateReservations(DataSnapshot dataSnapshot, boolean isFromFirebase) {
+        reservationData.clear();
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy h:mm a", Locale.getDefault());
+        Date now = new Date();
+
+        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+            try {
+                String id = snapshot.getKey();
+                String courtName = snapshot.child("courtName").getValue(String.class);
+                String reservationDate = snapshot.child("date").getValue(String.class);
+                String reservationDateTime = snapshot.child("reservationDateTime").getValue(String.class);
+                List<String> reservationTimeSlots = new ArrayList<>();
+                boolean isReservationPast = false;
+
+                for (DataSnapshot timeSlotSnapshot : snapshot.child("timeSlots").getChildren()) {
+                    String timeSlot = timeSlotSnapshot.getValue(String.class);
+                    if (timeSlot != null && reservationDate != null) {
+                        String startDateTime = reservationDate + " " + timeSlot.split(" - ")[0];
+                        Date slotStartDate = dateFormatter.parse(startDateTime);
+
+                        if (slotStartDate != null && slotStartDate.before(now)) {
+                            isReservationPast = true;
+                            reservationTimeSlots.add(timeSlot);
+                        }
+                    }
+                }
+
+                if (isReservationPast) {
+                    ReservationData reservation = new ReservationData(
+                            id,
+                            courtName,
+                            reservationDate,
+                            reservationDateTime,
+                            reservationTimeSlots,
+                            user_uid
+                    );
+                    reservationData.add(reservation);
+                }
+            } catch (ParseException e) {
+                Log.e("ReservationsHistory", "Date Parsing Error: " + e.getMessage());
+            }
+        }
+
+        reservationAdapter.notifyDataSetChanged();
+        String source = isFromFirebase ? "Firebase" : "SQLite";
+        Log.d("ReservationsHistory", "Loaded from " + source + ". Number of Reservations: " + reservationData.size());
+    }
 
     public void handleBackButtonClick(View view) {
         finish();

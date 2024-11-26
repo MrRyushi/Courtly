@@ -2,6 +2,7 @@ package com.example.mobdevemco;
 
 import static android.content.ContentValues.TAG;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -112,6 +113,12 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
     }
 
     void handleRegister(String email, String password, String fullName) {
+
+        if (!NetworkUtils.isInternetAvailable(this)) {
+            showNoInternetDialog();
+            return;
+        }
+
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -138,11 +145,16 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
     }
 
     public void writeNewUser(String userId, String name, String email) {
-        User user = new User(name, email, false, "No application", 0, "No reservations");
+        User user = new User(name, email, false, "No application", 0, "No reservations", "No date requested", "No member since");
         mDatabase.child("users").child(userId).setValue(user);
     }
 
     void handleLogin(String email, String password) {
+        if (!NetworkUtils.isInternetAvailable(this)) {
+            showNoInternetDialog();
+            return;
+        }
+
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -171,6 +183,12 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
     }
 
     void handleResetPassword(String email) {
+        if (!NetworkUtils.isInternetAvailable(this)) {
+            showNoInternetDialog();
+            return;
+        }
+
+
         mAuth.sendPasswordResetEmail(email)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -191,5 +209,13 @@ public class MainActivity extends AppCompatActivity implements RegisterBottomShe
         intent.putExtra("user_uid", userUID);
         startActivity(intent);
         finish();
+    }
+
+    private void showNoInternetDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("No Internet Connection")
+                .setMessage("Please check your internet connection and try again.")
+                .setPositiveButton("OK", null)
+                .show();
     }
 }

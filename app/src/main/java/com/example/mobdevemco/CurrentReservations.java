@@ -1,6 +1,7 @@
 package com.example.mobdevemco;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -47,6 +48,8 @@ public class CurrentReservations extends AppCompatActivity {
 
     private LinearLayout bookLinear;
 
+    private SQLiteHelper dbHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +57,7 @@ public class CurrentReservations extends AppCompatActivity {
 
         setContentView(R.layout.activity_current_reservations);
 
+        dbHelper = new SQLiteHelper(this);
         user_uid = getIntent().getStringExtra("user_uid");
         mDatabase = FirebaseDatabase.getInstance().getReference("reservations");
         bookLinear = findViewById(R.id.bookLinear);
@@ -120,8 +124,54 @@ public class CurrentReservations extends AppCompatActivity {
             bookLinear.setVisibility(View.GONE);  // Hide the booking option if there are reservations
         }
 
-        // Fetch reservations for the current user
-        fetchReservations(user_uid);
+        // Check internet connectivity and fetch data
+        if (NetworkUtils.isInternetAvailable(this)) {
+            // Fetch reservations for the current user from FIREBASE
+            fetchReservations(user_uid);
+        } else {
+            // Fetch user details and reservations from SQLite
+            fetchReservationsFromSQLite(user_uid);
+        }
+
+        // Check internet connectivity and fetch user details
+        if (NetworkUtils.isInternetAvailable(this)) {
+            // Fetch user details from Firebase
+            fetchUserName(user_uid, new FetchUserNameCallback() {
+                @Override
+                public void onUserNameFetched(String fullName) {
+                    accountName.setText(fullName != null ? fullName : "User name not available");
+                }
+            });
+
+            fetchMemberSince(user_uid, new FetchMemberSinceCallback() {
+                @Override
+                public void onMemberSinceFetched(String memberSinceValue) {
+                    memberSince.setText(memberSinceValue != null ? "Member since: " + memberSinceValue : "Not yet a member!");
+                }
+            });
+        } else {
+            // Fetch user details from SQLite
+            fetchUserDetailsFromSQLite(user_uid);
+        }
+    }
+
+    // Add this method to fetch user details from SQLite
+    private void fetchUserDetailsFromSQLite(String userId) {
+        Cursor cursor = dbHelper.getUserDetails(userId); // Assume this method returns a cursor with user details
+
+        if (cursor != null && cursor.moveToFirst()) {
+            String username = cursor.getString(cursor.getColumnIndexOrThrow("fullName"));
+            String memberSinceDate = cursor.getString(cursor.getColumnIndexOrThrow("memberSince"));
+
+            // Update the UI with fetched data
+            accountName.setText(username != null ? username : "User name not available");
+            memberSince.setText(memberSinceDate != null ? "Member since: " + memberSinceDate : "Not yet a member!");
+
+            cursor.close(); // Close the cursor to release resources
+        } else {
+            accountName.setText("User name not available");
+            memberSince.setText("Not yet a member!");
+        }
     }
 
     public interface FetchMemberSinceCallback {
@@ -277,4 +327,89 @@ public class CurrentReservations extends AppCompatActivity {
         intent.putExtra("user_uid", user_uid);
         myActivityResultLauncher.launch(intent);
     }
+
+    private void fetchReservationsFromSQLite(String userId) {
+        currentReservationData.clear(); // Clear the current list to avoid duplicate entries
+
+        Cursor cursor = dbHelper.getReservationsByUserId(userId); // Assume this method fetches reservations for the given userId
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy h:mm a", Locale.getDefault());
+        Date now = new Date(); // Current date and time
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                try {
+                    String id = cursor.getString(cursor.getColumnIndexOrThrow("id"));
+                    String courtName = cursor.getString(cursor.getColumnIndexOrThrow("courtName"));
+                    String reservationDate = cursor.getString(cursor.getColumnIndexOrThrow("date"));
+                    String reservationDateTime = cursor.getString(cursor.getColumnIndexOrThrow("reservationDateTime"));
+                    String timeSlots = cursor.getString(cursor.getColumnIndexOrThrow("timeSlots"));
+                    String userIdFromDb = cursor.getString(cursor.getColumnIndexOrThrow("userId"));
+
+                    // Split the timeSlots string into a List
+                    List<String> timeSlotsList = new ArrayList<>();
+                    if (timeSlots != null) {
+                        String[] slotsArray = timeSlots.split(",\\s*"); // Split by commas and trim whitespace
+                        for (String slot : slotsArray) {
+                            // Parse to check if the slot is upcoming
+                            String[] timeRange = slot.split(" - ");
+                            if (timeRange.length > 0 && reservationDate != null) {
+                                String startDateTime = reservationDate + " " + timeRange[0];
+                                Date slotStartDate = dateFormatter.parse(startDateTime);
+
+                                if (slotStartDate != null && !slotStartDate.before(now)) {
+                                    timeSlotsList.add(slot);
+                                }
+                            }
+                        }
+                    }
+
+                    // Only add the reservation if there are upcoming time slots
+                    if (!timeSlotsList.isEmpty()) {
+                        ReservationData reservation = new ReservationData(
+                                id,
+                                courtName,
+                                reservationDate,
+                                reservationDateTime,
+                                timeSlotsList,
+                                userIdFromDb
+                        );
+                        currentReservationData.add(reservation);
+                    }
+                } catch (Exception e) {
+                    Log.e("CurrentReservations", "Error parsing reservation data from SQLite: " + e.getMessage());
+                }
+            } while (cursor.moveToNext());
+
+            cursor.close(); // Close the cursor to release resources
+        }
+
+        // Sort reservations by date and time
+        currentReservationData.sort((r1, r2) -> {
+            try {
+                Date date1 = dateFormatter.parse(r1.getReservationDate() + " " + r1.getReservationTimeSlot().get(0).split(" - ")[0]);
+                Date date2 = dateFormatter.parse(r2.getReservationDate() + " " + r2.getReservationTimeSlot().get(0).split(" - ")[0]);
+
+                if (date1 == null) return 1; // Push null `date1` to the end
+                if (date2 == null) return -1; // Push null `date2` to the end
+
+                return date1.compareTo(date2);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return 0; // Keep original order if parsing fails
+            }
+        });
+
+        // Notify adapter of data change
+        reservationAdapter.notifyDataSetChanged();
+
+        // Update visibility of bookLinear
+        if (currentReservationData.isEmpty()) {
+            bookLinear.setVisibility(View.VISIBLE);  // Show booking option if no reservations
+        } else {
+            bookLinear.setVisibility(View.GONE);  // Hide booking option if there are reservations
+        }
+    }
+
+
+
 }
