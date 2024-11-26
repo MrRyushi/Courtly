@@ -7,19 +7,23 @@ public class User {
     public String membershipStatus;
     public int totalReservations;
     public String recentReservation;
+    public String dateRequested;
+    public String memberSince;
 
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String username, String email, boolean member, String membershipStatus, int totalReservations, String recentReservation) {
+    public User(String username, String email, boolean member, String membershipStatus, int totalReservations, String recentReservation, String dateRequested, String memberSince) {
         this.fullName = username;
         this.email = email;
         this.member = member;
         this.membershipStatus = membershipStatus;
         this.totalReservations = totalReservations;
         this.recentReservation = recentReservation;
+        this.dateRequested = dateRequested;
+        this.memberSince = memberSince;
     }
 
     public String getFullName() {
@@ -38,7 +42,7 @@ public class User {
         this.email = email;
     }
 
-    public boolean member() {
+    public boolean getMember() {
         return member;
     }
 
@@ -60,6 +64,30 @@ public class User {
 
     public void setTotalReservations(int totalReservations) {
         this.totalReservations = totalReservations;
+    }
+
+    public String getRecentReservation() {
+        return recentReservation;
+    }
+
+    public void setRecentReservation(String recentReservation) {
+        this.recentReservation = recentReservation;
+    }
+
+    public String getDateRequested() {
+        return dateRequested;
+    }
+
+    public void setDateRequested(String dateRequested) {
+        this.dateRequested = dateRequested;
+    }
+
+    public String getMemberSince() {
+        return memberSince;
+    }
+
+    public void setMemberSince(String memberSince) {
+        this.memberSince = memberSince;
     }
 
 }

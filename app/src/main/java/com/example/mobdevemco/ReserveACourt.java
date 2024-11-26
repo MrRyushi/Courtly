@@ -56,6 +56,15 @@ public class ReserveACourt extends AppCompatActivity {
             return insets;
         });
 
+        // Check internet connectivity and fetch data
+        if (!NetworkUtils.isInternetAvailable(this)) {
+            new AlertDialog.Builder(this)
+                    .setTitle("No Internet Connection")
+                    .setMessage("Please check your internet connection and try again.")
+                    .setPositiveButton("OK", (dialog, which) -> finish())
+                    .show();
+
+        }
         // database reference
         mDatabase = FirebaseDatabase.getInstance().getReference();
 

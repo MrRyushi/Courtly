@@ -2,6 +2,7 @@ package com.example.mobdevemco;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,11 +26,17 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 public class Home extends AppCompatActivity {
@@ -98,6 +105,146 @@ public class Home extends AppCompatActivity {
                 SPHelper.setBoolean(this, "hasSeenFragment", true);
             }
         });
+
+        // Initialize Firebase and SQLite
+        SQLiteHelper dbHelper = new SQLiteHelper(this);
+
+        // Check internet connectivity and fetch data
+        if (NetworkUtils.isInternetAvailable(this)) {
+            fetchAndStoreData(dbHelper);
+        }
+
+    }
+
+    private void fetchAndStoreData(SQLiteHelper dbHelper) {
+        // Fetch Users
+        mDatabase.child("users").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DataSnapshot usersSnapshot = task.getResult();
+                for (DataSnapshot userSnapshot : usersSnapshot.getChildren()) {
+                    String id = userSnapshot.getKey();
+                    String dateRequested = userSnapshot.child("dateRequested").getValue(String.class);
+                    String email = userSnapshot.child("email").getValue(String.class);
+                    String fullName = userSnapshot.child("fullName").getValue(String.class);
+                    boolean member = Boolean.TRUE.equals(userSnapshot.child("member").getValue(Boolean.class));
+                    String memberSince = userSnapshot.child("memberSince").getValue(String.class);
+                    String membershipStatus = userSnapshot.child("membershipStatus").getValue(String.class);
+                    String recentReservation = userSnapshot.child("recentReservation").getValue(String.class);
+                    Integer totalReservations = userSnapshot.child("totalReservations").getValue(Integer.class);
+                    if (totalReservations == null) totalReservations = 0;
+
+                    // Check if the user already exists in the database
+                    User existingUser = dbHelper.getUserById(id);
+                    if (existingUser != null) {
+                        // Update the user if there are changes
+                        Log.d("FetchUsers", "User already exists in SQL: " + id);
+                        if (!recentReservation.equals(existingUser.getRecentReservation()) ||
+                                totalReservations != existingUser.getTotalReservations() ||
+                                !membershipStatus.equals(existingUser.getMembershipStatus()) ||
+                                member != (existingUser.getMember()) ||
+                                !memberSince.equals(existingUser.getMemberSince()) ||
+                                !dateRequested.equals(existingUser.getDateRequested())
+                        ) {
+                            dbHelper.updateUser(id, dateRequested, email, fullName, member, memberSince, membershipStatus, recentReservation, totalReservations);
+                            Log.d("FetchUsers", "User updated in SQL: " + id);
+                        }
+                    } else {
+                        // Insert new user
+                        dbHelper.insertUser(id, dateRequested, email, fullName, member, memberSince, membershipStatus, recentReservation, totalReservations);
+                        Log.d("FetchUsers", "User inserted to SQL: " + id);
+                    }
+                }
+            }
+        });
+
+        // Fetch Reservations
+        mDatabase.child("reservations").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DataSnapshot reservationsSnapshot = task.getResult();
+
+                // Step 1: Collect all Firebase reservation IDs
+                Set<String> firebaseReservationIds = new HashSet<>();
+                List<ReservationData> firebaseReservations = new ArrayList<>();
+
+                for (DataSnapshot reservationSnapshot : reservationsSnapshot.getChildren()) {
+                    String id = reservationSnapshot.getKey();
+                    String courtName = reservationSnapshot.child("courtName").getValue(String.class);
+                    String date = reservationSnapshot.child("date").getValue(String.class);
+                    String reservationDateTime = reservationSnapshot.child("reservationDateTime").getValue(String.class);
+                    String userId = reservationSnapshot.child("userId").getValue(String.class);
+
+                    // Build and normalize timeSlots
+                    List<String> timeSlotsList = new ArrayList<>();
+                    for (DataSnapshot timeSlotSnapshot : reservationSnapshot.child("timeSlots").getChildren()) {
+                        String timeSlot = timeSlotSnapshot.getValue(String.class);
+                        if (timeSlot != null) {
+                            timeSlotsList.add(timeSlot.trim());
+                        }
+                    }
+                    Collections.sort(timeSlotsList); // Sort for consistent comparison
+
+                    firebaseReservationIds.add(id);
+                    firebaseReservations.add(new ReservationData(id, courtName, date, reservationDateTime, timeSlotsList, userId));
+                }
+
+                // Step 2: Fetch all reservations from SQLite
+                List<ReservationData> sqliteReservations = dbHelper.getAllReservations();
+                Set<String> sqliteReservationIds = new HashSet<>();
+                for (ReservationData reservation : sqliteReservations) {
+                    sqliteReservationIds.add(reservation.getId());
+                }
+
+                // Step 3: Sync Firebase data with SQLite
+                for (ReservationData firebaseReservation : firebaseReservations) {
+                    ReservationData existingReservation = dbHelper.getReservationById(firebaseReservation.getId());
+
+                    if (existingReservation != null) {
+                        // Compare fields to check if an update is needed
+                        boolean needsUpdate =
+                                !firebaseReservation.getCourtName().equals(existingReservation.getCourtName()) ||
+                                        !firebaseReservation.getReservationDate().equals(existingReservation.getReservationDate()) ||
+                                        !firebaseReservation.getReservationDateTime().equals(existingReservation.getReservationDateTime()) ||
+                                        !firebaseReservation.getReservationTimeSlot().equals(existingReservation.getReservationTimeSlot());
+
+                        if (needsUpdate) {
+                            dbHelper.updateReservation(
+                                    firebaseReservation.getId(),
+                                    firebaseReservation.getCourtName(),
+                                    firebaseReservation.getReservationDate(),
+                                    firebaseReservation.getReservationDateTime(),
+                                    TextUtils.join(", ", firebaseReservation.getReservationTimeSlot()),
+                                    firebaseReservation.getUserId()
+                            );
+                            Log.d("FetchReservations", "Reservation updated in SQL: " + firebaseReservation.getId());
+                        }
+                    } else {
+                        // Insert new reservation
+                        dbHelper.insertReservation(
+                                firebaseReservation.getId(),
+                                firebaseReservation.getCourtName(),
+                                firebaseReservation.getReservationDate(),
+                                firebaseReservation.getReservationDateTime(),
+                                TextUtils.join(", ", firebaseReservation.getReservationTimeSlot()),
+                                firebaseReservation.getUserId()
+                        );
+                        Log.d("FetchReservations", "Reservation inserted to SQL: " + firebaseReservation.getId());
+                    }
+                }
+
+                // Step 4: Remove SQLite records not present in Firebase
+                for (String sqliteReservationId : sqliteReservationIds) {
+                    if (!firebaseReservationIds.contains(sqliteReservationId)) {
+                        dbHelper.deleteReservation(sqliteReservationId);
+                        Log.d("FetchReservations", "Reservation deleted from SQL: " + sqliteReservationId);
+                    }
+                }
+            } else {
+                Log.e("FetchReservations", "Failed to fetch reservations: " + task.getException());
+            }
+        });
+
+
+
     }
 
     private void showWelcomeFragment() {
@@ -129,41 +276,59 @@ public class Home extends AppCompatActivity {
     }
 
     public void handleMembershipButtonClick(View v) {
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        // Check internet connectivity and fetch data
+        if (NetworkUtils.isInternetAvailable(this)) {
+            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        mDatabase.child("users").child(userId).child("membershipStatus").get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                String membershipStatus = task.getResult().getValue(String.class);
+            mDatabase.child("users").child(userId).child("membershipStatus").get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    String membershipStatus = task.getResult().getValue(String.class);
 
-                if (membershipStatus != null) {
-                    Intent intent = null;
-
-                    switch (membershipStatus) {
-                        case "No application":
-                            intent = new Intent(this, MembershipApplication.class);
-                            break;
-                        case "Requested":
-                            intent = new Intent(this, MembershipPending.class);
-                            break;
-                        case "Approved":
-                            if (!SPHelper.getBoolean(this, "hasSeenMembershipSuccess", false)) {
-                                intent = new Intent(this, MembershipSuccess.class);
-                                SPHelper.setBoolean(this, "hasSeenMembershipSuccess", true);
-                            } else {
-                                intent = new Intent(this, MembershipPage.class);
-                            }
-                            break;
+                    if (membershipStatus != null) {
+                        handleMembershipStatus(membershipStatus);
                     }
-
-                    if (intent != null) {
-                        myActivityResultLauncher.launch(intent);
-                    }
+                } else {
+                    Log.e("Home", "Failed to fetch membership status from Firebase");
                 }
+            });
+        } else {
+            // Fetch data from SQLite
+            SQLiteHelper dbHelper = new SQLiteHelper(this);
+            User user = dbHelper.getUserById(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+            if (user != null && user.getMembershipStatus() != null) {
+                handleMembershipStatus(user.getMembershipStatus());
             } else {
-                Log.e("Home", "Failed to fetch membership status");
+                Log.e("Home", "Failed to fetch membership status from SQLite");
             }
-        });
+        }
     }
+
+    private void handleMembershipStatus(String membershipStatus) {
+        Intent intent = null;
+
+        switch (membershipStatus) {
+            case "No application":
+                intent = new Intent(this, MembershipApplication.class);
+                break;
+            case "Requested":
+                intent = new Intent(this, MembershipPending.class);
+                break;
+            case "Approved":
+                if (!SPHelper.getBoolean(this, "hasSeenMembershipSuccess", false)) {
+                    intent = new Intent(this, MembershipSuccess.class);
+                    SPHelper.setBoolean(this, "hasSeenMembershipSuccess", true);
+                } else {
+                    intent = new Intent(this, MembershipPage.class);
+                }
+                break;
+        }
+
+        if (intent != null) {
+            myActivityResultLauncher.launch(intent);
+        }
+    }
+
 
     public void handleLogoutBtnClick(View v) {
         SPHelper.clear(this); // Clear all saved preferences
