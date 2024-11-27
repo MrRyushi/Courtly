@@ -86,6 +86,8 @@ public class ReserveACourt extends AppCompatActivity {
 
         // Initialize calendar view
         calendarView = findViewById(R.id.calendarView);
+        calendarView.setMinDate(System.currentTimeMillis() - 1000); // Disable past dates
+
 
         // court name
         TextView courtName = findViewById(R.id.courtName);
@@ -111,8 +113,10 @@ public class ReserveACourt extends AppCompatActivity {
                 (calendar.get(Calendar.MONTH) + 1) + "/" +
                 calendar.get(Calendar.YEAR);
 
-        // Initialize calendar view and set the date change listener
-        calendarView = findViewById(R.id.calendarView);
+        // disable past time slots of current day
+
+        disablePastTimeSlotsForToday();
+
         calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
             // Format the date to "day/month/year"
             selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
@@ -123,6 +127,30 @@ public class ReserveACourt extends AppCompatActivity {
             // Clear all time slots to reset availability
             enableAllTimeSlots();
 
+            Calendar currentCalendar = Calendar.getInstance();
+            if (year == currentCalendar.get(Calendar.YEAR) &&
+                    month == currentCalendar.get(Calendar.MONTH) &&
+                    dayOfMonth == currentCalendar.get(Calendar.DAY_OF_MONTH)) {
+
+                int currentHour = getCurrentHour();
+                System.out.println("current hour: " + currentHour);
+
+                if (currentHour >= 6) time6amTo7am.setEnabled(false);
+                if (currentHour >= 7) time7amTo8am.setEnabled(false);
+                if (currentHour >= 8) time8amTo9am.setEnabled(false);
+                if (currentHour >= 9) time9amTo10am.setEnabled(false);
+                if (currentHour >= 10) time10amTo11am.setEnabled(false);
+                if (currentHour >= 11) time11amTo12pm.setEnabled(false);
+                if (currentHour >= 12) time12pmTo1pm.setEnabled(false);
+                if (currentHour >= 13) time1pmTo2pm.setEnabled(false);
+                if (currentHour >= 14) time2pmTo3pm.setEnabled(false);
+                if (currentHour >= 15) time3pmTo4pm.setEnabled(false);
+                if (currentHour >= 16) time4pmTo5pm.setEnabled(false);
+                if (currentHour >= 17) time5pmTo6pm.setEnabled(false);
+                if (currentHour >= 18) time6pmTo7pm.setEnabled(false);
+                if (currentHour >= 19) time7pmTo8pm.setEnabled(false);
+            }
+
             // Refresh the availability for the selected date
             addReservationListener();
         });
@@ -132,6 +160,29 @@ public class ReserveACourt extends AppCompatActivity {
 
         // Prefill the time slots
         prefillTimeSlots();
+    }
+
+    // Helper method to disable past time slots for the current day
+    private void disablePastTimeSlotsForToday() {
+        Calendar currentCalendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Manila"));
+        int currentHour = currentCalendar.get(Calendar.HOUR_OF_DAY);
+
+        System.out.println("Current hour: " + currentHour);
+
+        if (currentHour >= 6) time6amTo7am.setEnabled(false);
+        if (currentHour >= 7) time7amTo8am.setEnabled(false);
+        if (currentHour >= 8) time8amTo9am.setEnabled(false);
+        if (currentHour >= 9) time9amTo10am.setEnabled(false);
+        if (currentHour >= 10) time10amTo11am.setEnabled(false);
+        if (currentHour >= 11) time11amTo12pm.setEnabled(false);
+        if (currentHour >= 12) time12pmTo1pm.setEnabled(false);
+        if (currentHour >= 13) time1pmTo2pm.setEnabled(false);
+        if (currentHour >= 14) time2pmTo3pm.setEnabled(false);
+        if (currentHour >= 15) time3pmTo4pm.setEnabled(false);
+        if (currentHour >= 16) time4pmTo5pm.setEnabled(false);
+        if (currentHour >= 17) time5pmTo6pm.setEnabled(false);
+        if (currentHour >= 18) time6pmTo7pm.setEnabled(false);
+        if (currentHour >= 19) time7pmTo8pm.setEnabled(false);
     }
 
     public void handleBackBtnClick(View v){
@@ -329,6 +380,17 @@ public class ReserveACourt extends AppCompatActivity {
                 .setPositiveButton("OK", (dialog, which) -> resetForm()) // Reset form on dialog dismissal
                 .show();
     }
+
+    private int getCurrentHour() {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Manila"));
+        return calendar.get(Calendar.HOUR_OF_DAY);
+    }
+
+    private int getCurrentMinute() {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Manila"));
+        return calendar.get(Calendar.MINUTE);
+    }
+
 
 
     // Method to add the Firebase listener
