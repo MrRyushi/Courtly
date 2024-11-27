@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "388723023242",
+    "firebase_url": "https://courtly-60306-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "courtly-60306",
+    "storage_bucket": "courtly-60306.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:388723023242:android:39363dfe0100321a56fc73",
+        "android_client_info": {
+          "package_name": "com.example.mobdevemco"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdK8GVJ5A8UKBYTWHyxfNWtYaMYaClv5M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

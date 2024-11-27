@@ -1,6 +1,8 @@
 package com.example.mobdevemco;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,4 +23,17 @@ public class MembershipSuccess extends AppCompatActivity {
             return insets;
         });
     }
+
+    public void handleBackButton(View view) {
+        finish();
+    }
+
+    public void handleCheckMembershipStatusButton(View view) {
+
+        Intent i = new Intent(MembershipSuccess.this, MembershipPage.class);
+        startActivity(i);
+        finish();
+    }
+
+
 }
