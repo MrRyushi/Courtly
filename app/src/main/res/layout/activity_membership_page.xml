@@ -5,208 +5,190 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F2E8C6"
+    android:background="#800000"
     tools:context=".MembershipPage">
 
 
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="fitCenter"
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="13dp"
+        android:layout_marginTop="11dp"
+        android:layout_marginEnd="13dp"
+        android:layout_marginBottom="11dp"
+        android:background="@drawable/rounded_border"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/banner_1" />
+        tools:circularflow_radiusInDP="5dp">
 
-    <ImageView
-        android:id="@+id/imageView5"
-        android:layout_width="426dp"
-        android:layout_height="255dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView4"
-        app:srcCompat="@drawable/banner_2" />
-
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <Button
-            android:id="@+id/backBtn"
+        <FrameLayout
             android:layout_width="wrap_content"
-            android:layout_height="56dp"
-            android:layout_marginTop="12dp"
-            android:background="@android:color/transparent"
-            android:backgroundTint="#F0E6C4"
-            android:drawableLeft="@drawable/arrow_back_black"
-            android:drawableTint="#F0E6C4"
-            android:onClick="handleBackBtnClick"
-            android:padding="16dp" />
+            android:layout_height="wrap_content">
 
-    </FrameLayout>
+            <Button
+                android:id="@+id/backBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                android:layout_marginTop="12dp"
+                android:background="@android:color/transparent"
+                android:backgroundTint="#F0E6C4"
+                android:drawableLeft="@drawable/arrow_back_black"
+                android:drawableTint="#F0E6C4"
+                android:onClick="handleBackButton"
+                android:padding="16dp" />
 
-    <FrameLayout
-        android:layout_width="425dp"
-        android:layout_height="398dp"
-        android:background="#800000"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        </FrameLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/frameLayout3"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/rounded_corners">
+            android:layout_height="match_parent">
 
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constrainFav"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginEnd="30dp"
-                android:layout_marginBottom="80dp"
-                android:background="@drawable/rounded_corners"
-                android:backgroundTint="#F2E8C6"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+            <TextView
+                android:id="@+id/welcomeBack"
+                android:layout_width="243dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="74dp"
+                android:layout_marginTop="51dp"
+                android:layout_marginEnd="74dp"
+                android:fontFamily="@font/poppins_bold"
+                android:text="Hello, Member"
+                android:textAlignment="center"
+                android:textColor="#F3F3F3"
+                android:textSize="32dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <View
-                    android:id="@+id/divider"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:background="#333333"
-                    android:elevation="12sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView10" />
+            <TextView
+                android:id="@+id/accountName"
+                android:layout_width="339dp"
+                android:layout_height="47dp"
+                android:layout_marginStart="26dp"
+                android:layout_marginEnd="26dp"
+                android:fontFamily="@font/poppins_bold"
+                android:textAlignment="center"
+                android:textColor="#F8EED1"
+                android:textSize="32dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/welcomeBack" />
 
-                <TextView
-                    android:id="@+id/textView10"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="15dp"
-                    android:fontFamily="@font/poppins_bold"
-                    android:text="Favourites"
-                    android:textSize="20sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+            <View
+                android:id="@+id/view2"
+                android:layout_width="350dp"
+                android:layout_height="1dp"
+                android:layout_marginVertical="8dp"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="21dp"
+                android:background="#B0B0B0"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/accountName" />
 
-                <FrameLayout
-                    android:id="@+id/frameLayout4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="5dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/divider">
+            <TextView
+                android:id="@+id/specialoffer"
+                android:layout_width="133dp"
+                android:layout_height="28dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="238dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="Special Offers"
+                android:textAlignment="viewStart"
+                android:textColor="#F3F3F3"
+                android:textSize="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/view2" />
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginEnd="20dp"
-                        android:layout_marginBottom="40dp"
-                        app:cardBackgroundColor="#FFFFFF"
-                        app:cardCornerRadius="10dp"
-                        app:cardElevation="10dp"
-                        app:layout_constraintTop_toTopOf="parent">
+            <ImageView
+                android:id="@+id/imageView8"
+                android:layout_width="346dp"
+                android:layout_height="192dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="25dp"
+                android:layout_marginBottom="18dp"
+                app:layout_constraintBottom_toTopOf="@+id/specialoffer2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/specialoffer"
+                app:srcCompat="@drawable/banner_1" />
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:paddingHorizontal="12dp">
+            <TextView
+                android:id="@+id/specialoffer2"
+                android:layout_width="133dp"
+                android:layout_height="28dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="18dp"
+                android:layout_marginEnd="238dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="Benefits"
+                android:textAlignment="viewStart"
+                android:textColor="#F3F3F3"
+                android:textSize="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView8" />
 
+            <ImageView
+                android:id="@+id/imageView10"
+                android:layout_width="345dp"
+                android:layout_height="224dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="26dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/specialoffer2"
+                app:srcCompat="@drawable/banner_2" />
 
-                            <LinearLayout
-                                android:layout_width="172dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:orientation="vertical">
+            <TextView
+                android:id="@+id/lockerlounge"
+                android:layout_width="331dp"
+                android:layout_height="29dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="Locker Room &amp; Lounge Access Code"
+                android:textAlignment="viewStart"
+                android:textColor="#F3F3F3"
+                android:textSize="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.301"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView10" />
 
-                                <TextView
-                                    android:id="@+id/courtName"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginHorizontal="10dp"
-                                    android:layout_marginVertical="3dp"
-                                    android:fontFamily="@font/poppins_bold"
-                                    android:text="Court Alpha"
-                                    android:textColor="#000"
-                                    android:textSize="20sp"
-                                    android:textStyle="bold" />
+            <TextView
+                android:id="@+id/code"
+                android:layout_width="243dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="720dp"
+                android:fontFamily="@font/poppins_bold"
+                android:text="LR52786"
+                android:textAlignment="center"
+                android:textColor="#F3F3F3"
+                android:textSize="34dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.503"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                                <TextView
-                                    android:id="@+id/reservationDate"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginHorizontal="10dp"
-                                    android:layout_marginVertical="3dp"
-                                    android:fontFamily="@font/poppins_medium"
-                                    android:text="Date: Oct 15, 2024"
-                                    android:textSize="12sp" />
-
-                                <TextView
-                                    android:id="@+id/reservationTime"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginHorizontal="10dp"
-                                    android:layout_marginVertical="3dp"
-                                    android:fontFamily="@font/poppins_regular"
-                                    android:text="Time: 11:00 AM - 12:00 PM"
-                                    android:textSize="12sp" />
-
-                            </LinearLayout>
-
-                            <ImageView
-                                android:id="@+id/courtImage"
-                                android:layout_width="120dp"
-                                android:layout_height="130dp"
-                                android:layout_margin="10dp"
-                                android:src="@drawable/court" />
-
-                        </LinearLayout>
-
-                    </androidx.cardview.widget.CardView>
-                </FrameLayout>
-
-                <TextView
-                    android:id="@+id/textView11"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="5dp"
-                    android:fontFamily="@font/poppins_light"
-                    android:text="Book again!"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/frameLayout4"
-                    app:layout_constraintVertical_bias="0.0" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <View
+                android:id="@+id/view4"
+                android:layout_width="250dp"
+                android:layout_height="1dp"
+                android:layout_marginVertical="8dp"
+                android:layout_marginStart="70dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="64dp"
+                android:background="#B0B0B0"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/code" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </FrameLayout>
 
 

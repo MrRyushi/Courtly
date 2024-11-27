@@ -2,6 +2,7 @@ package com.example.mobdevemco;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,15 +13,16 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.ViewHolder> {
-    ReservationData[] reservationData;
-    Context context;
+import java.util.List;
 
-    public ReservationAdapter(ReservationData[] reservationData, ReservationsHistory mainActivity) {
-        this.reservationData = reservationData;
+public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.ViewHolder> {
+    private List<ReservationData> reservationDataList;
+    private Context context;
+
+    public ReservationAdapter(List<ReservationData> reservationDataList, ReservationsHistory mainActivity) {
+        this.reservationDataList = reservationDataList;
         this.context = mainActivity;
     }
-
 
     @NonNull
     @Override
@@ -33,15 +35,16 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ReservationAdapter.ViewHolder holder, int position) {
-        final ReservationData reservationDataList = reservationData[position];
-        holder.courtName.setText(reservationDataList.getCourtName());
-        holder.reservationDate.setText("Date: " + reservationDataList.getReservationDate());
-        holder.reservationTime.setText("Time: " + reservationDataList.getReservationTime());
+        final ReservationData reservationData = reservationDataList.get(position);
+        holder.courtName.setText(reservationData.getCourtName());
+        holder.reservationDate.setText("Date: " + reservationData.getReservationDate());
+        String timeSlot = TextUtils.join(", ", reservationData.getReservationTimeSlot());
+        holder.reservationTime.setText("Time: " + timeSlot);
     }
 
     @Override
     public int getItemCount() {
-        return reservationData.length;
+        return reservationDataList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
